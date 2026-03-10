@@ -1,0 +1,7 @@
+*
+!/.gitignore
+!/config/
+!/config/addons/
+/config/addons/*
+!/config/addons/luashitacast/
+!/config/addons/luashitacast/**
