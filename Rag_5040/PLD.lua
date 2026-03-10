@@ -1,7 +1,6 @@
 local profile = {}
 
 local fastCastValue = 0.07 -- 7% from gear listed in Precast set
-local snapShotValue = 0.00 -- 0% from gear listed in Preshot set
 
 local max_hp_in_idle_with_regen_gear_equipped = 0 -- You could set this to 0 if you do not wish to ever use regen gear
 
@@ -49,7 +48,7 @@ local sets = {
     },
     IdleALT = {
     },
-    IdleDT = { -- Disabled on horizon_safe_mode -- 1415
+    IdleDT = { -- 1415
         Main = 'Tutelary',
         Sub = 'Aegis',
         Range = 'Rosenbogen',
@@ -67,7 +66,7 @@ local sets = {
         Legs = { Name = 'Dst. Subligar +1', Priority = 10 }, -- 3
         Feet = { Name = 'Glt. Leggings +1', Priority = 90 },
     },
-    IdleALTDT = { -- Disabled on horizon_safe_mode
+    IdleALTDT = {
     },
     Resting = {
         Main = 'Pluto\'s Staff',
@@ -95,7 +94,6 @@ local sets = {
     Movement = {
         Legs = 'Blood Cuisses',
     },
-    Movement_TP = {},
 
     DT = { -- 1415
         Main = 'Tutelary',
@@ -487,11 +485,6 @@ local sets = {
     },
     Weapon_Loadout_2 = {},
     Weapon_Loadout_3 = {},
-
-    Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
-    Ranged = {},
-
-    VileElixir = {},
 }
 
 profile.SetMacroBook = function()
@@ -549,11 +542,9 @@ profile.HandleItem = function()
 end
 
 profile.HandlePreshot = function()
-    gcmelee.DoPreshot(sets.Preshot, gFunc.Combine(sets.Preshot, sets.Ranged), snapShotValue)
 end
 
 profile.HandleMidshot = function()
-    gcmelee.DoMidshot(sets, gFunc.Combine(sets.Preshot, sets.Ranged))
 end
 
 profile.HandleWeaponskill = function()

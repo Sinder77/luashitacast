@@ -1,7 +1,6 @@
 local profile = {}
 
 local fastCastValue = 0.00 -- 0% from gear listed in Precast set
-local snapShotValue = 0.00 -- 0% from gear listed in Preshot set
 
 local max_hp_in_idle_with_regen_gear_equipped = 0 -- You could set this to 0 if you do not wish to ever use regen gear
 
@@ -16,7 +15,6 @@ local sets = {
     Resting = {},
     Town = {},
     Movement = {},
-    Movement_TP = {},
 
     DT = {},
     MDT = {},
@@ -56,11 +54,6 @@ local sets = {
     Weapon_Loadout_1 = {},
     Weapon_Loadout_2 = {},
     Weapon_Loadout_3 = {},
-
-    Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
-    Ranged = {},
-
-    VileElixir = {},
 }
 
 profile.SetMacroBook = function()
@@ -191,11 +184,9 @@ profile.HandleItem = function()
 end
 
 profile.HandlePreshot = function()
-    gcmelee.DoPreshot(sets.Preshot, gFunc.Combine(sets.Preshot, sets.Ranged), snapShotValue)
 end
 
 profile.HandleMidshot = function()
-    gcmelee.DoMidshot(sets, gFunc.Combine(sets.Preshot, sets.Ranged))
 end
 
 profile.HandleWeaponskill = function()
@@ -232,27 +223,19 @@ profile.HandleCommand = function(args)
     end
 end
 
-local MPJobs = T{ 'RDM','BLM','WHM','SMN' }
-
 profile.HandleDefault = function()
     gcmelee.DoDefault(max_hp_in_idle_with_regen_gear_equipped)
 
     local player = gData.GetPlayer()
     if (player.SubJob == 'NIN' and player.Status == 'Engaged') then
-        local sub = gData.GetEquipment().Sub
-        if (sub ~= nil) then
-            if (sub.Resource.Slots == 3) then -- if this is a 1h weapon
-                gFunc.EquipSet('TP_NIN')
-            end
-        end
-    end
-
-    local isMPSJ = MPJobs:contains(player.SubJob)
-    if (player.MP < 50 and isMPSJ) then
-        gFunc.EquipSet('gaudy_harness')
+        gFunc.EquipSet('TP_NIN')
     end
 
     gcmelee.DoDefaultOverride()
+
+    if (player.MP < 50 and (player.SubJob == 'WHM' or player.SubJob == 'BLM' or player.SubJob == 'RDM')) then
+        gFunc.EquipSet('gaudy_harness')
+    end
 
     local petAction = gData.GetPetAction()
     if (petAction ~= nil) then

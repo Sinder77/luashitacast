@@ -1,6 +1,6 @@
 # Rag's LuAshitacast
 
-A combined LuAshitacast for Lvl 75 era that was originally based off of https://github.com/GetAwayCoxn/Luashitacast-Profiles
+A combined LuAshitacast for HorizonXI (Lvl 75 era) that was originally based off of https://github.com/GetAwayCoxn/Luashitacast-Profiles
 
 All jobs are fully implemented.
 
@@ -12,7 +12,7 @@ Jobs use the corresponding templates to automatically implement functionality th
 - e.g. All melee jobs are able to type /tp to switch between Low Accuracy and High Accuracy TP sets.
 - e.g. All mage jobs are able to type /mode to switch between Magic Potency vs Magic Accuracy sets.
 
-While these luas were originally designed for HorizonXI, these luas should still work on other 75-era private servers so long as HorizonXI custom equipment is appropriately commented out / disabled.
+These luas were designed to be used in HorizonXI and therefore features such as automatically using opo-opo necklace when asleep or automatically cancelling shadows for Utsusemi: Ichi are not included.
 
 # How to Use
 
@@ -22,10 +22,9 @@ While these luas were originally designed for HorizonXI, these luas should still
 - Rename the Rag_5040 folder to [Your_Character_Name]_[Your_Character_ID]
 - [Your_Character_ID] may be obtained from another plugin such as MobDB or by creating a blank lua using /lac newlua and then replacing the created folder.
 - Edit Equipment Sets in [JOB].lua.
-- Edit Elemental Staves (NQ vs HQ), Obis and other conditional gear in ..\\common\\gcmage.lua if you are using these luas for mage jobs.
-- Edit Fenrir's Earring in ..\\common\\gcmelee.lua if you are using these luas for melee jobs.
-- Edit Aketons and Dream gear etc. and turn on or off additional logging in ..\\common\\gcinclude-rag.lua.
-- Set the i_can_read_and_follow_instructions_test boolean settings to true within gcmage.lua, gcmelee.lua, and gcinclude-rag.lua to confirm you actually read this and didn't waste other people's time.
+- Edit Elemental Staves (NQ vs HQ), Obis and some conditional gear in gcmage.lua if you are using these luas for mage jobs.
+- Edit Fenrir's Earring in gcmelee.lua if you are using these luas for melee jobs.
+- Edit Aketons and Dream gear etc. and turn on or off additional logging in gcincluderag.lua.
 - Make sure you fill out the fastcastValue correctly in your [JOB].lua if you are using any Fast Cast gear in the Precast set.
 - Make sure you fill out the maxMP values correctly in your [JOB].lua if you are using these luas for mage jobs.
 - The midcast delay assumes you use the PacketFlow plugin. If you don't use PacketFlow, adjust the values in gcmage.lua (or gcmelee.lua for melee jobs).
@@ -62,10 +61,6 @@ This will work 99% of the time unless you have added your own logic and therefor
           it will equip the kite set instead of or on top of the fire resistance set.
           this allows you to gain 12% move speed while keeping most of your fire resistance.
 
-/weapon /wl - toggles between using Weapon_Loadout sets.
-              can be used to specify different weapon loadouts. e.g. virtue stones etc.
-              there is no UI element for this.
-
 [Idle Sets] (Changes your idle set to use these sets instead)
 /idle           - toggles between using 2 different idle sets
                   i.e. Normal and Alternate / Idle and IdleALT.
@@ -96,11 +91,9 @@ This will work 99% of the time unless you have added your own logic and therefor
        to give ashitacast the maximum chance of actually equipping the correct gear on cast.
        interim equip sets will no longer work when this is enabled.
 
-/horizonmode - if you wish to use Horizon Mode in LuAshitacast to be 100% HorizonXI approved,
+/horizonmode - if you wish to use Horizon Mode in LuAshitacast to be 100% horizon approved,
                you can then use this alias to manually trigger a handle default gear equip
                using a key press!
-               i.e. You could push this 4 times a second just to mimic exactly what
-               LuAshitacast would do for you automatically.
 ```
 
 ## Additional Commands for All Mage Jobs:
@@ -120,24 +113,23 @@ This will work 99% of the time unless you have added your own logic and therefor
                   Accuracy sets.
 
 [RDM / WHM / BRD / SMN]
-/tp             - cycles TP set between being Off or a LowAcc and HighAcc set.
-                  Using TP modes will cause spells / songs to no longer use staves etc.
-                  as your weapons etc. will be locked to retain TP.
-/tptoggle       - toggles between the last used TP set and Off.
+/fight          - used to turn off TP set.
+                  this is automatically used for you when disengaging if your TP is 0.
+/tp             - toggles TP set between a LowAcc and HighAcc set.
 ```
 
 ## Additional Commands for All Melee Jobs:
 ```
-/tp /tpset /mode - toggles TP set between a LowAcc and HighAcc set.
+/tpset /tp /mode - toggles TP set between a LowAcc and HighAcc set.
                    this will be overwritten if you have a DT or resistance set etc. enabled.
                    this is disabled for PLD in favour of using Idle sets by default.
+/locktp          - locks or unlocks Main, Sub, Ranged and Ammo slots.
 ```
 
 ## Additional Commands for RDM:
 ```
 [Regular Toggles]
 /hate   - causes your cures, sleeps, blinds, dispels and binds to equip +enmity set on cast.
-/fring  - Toggles usage of Fencer's Ring.
 
 [Special Sets]
 These commands and sets were created before /lockset was implemented and do the same thing.
@@ -176,11 +168,6 @@ These commands and sets were created before /lockset was implemented and do the 
 /sballad - switches to using a wind instrument over string to reduce AOE.
 ```
 
-## Additional Commands for SMN:
-```
-/cring  - Toggles usage of Conjurer's Ring.
-```
-
 ## Additional Commands for BST:
 ```
 All of the following toggles set what jug Call Beast will use.
@@ -191,37 +178,17 @@ All of the following toggles set what jug Call Beast will use.
 /rabbit
 /mandy
 /flytrap
-
-Alternatively, use /nextpet to cycle through them.
 ```
 
 ## Additional Commands for THF:
 ```
 /th - Forces you to equip TH gear when TP-ing in case you have a tinfoil hat.
       Will also force you to equip TH gear when using a ranged attack and ability.
-
-All of the following toggles set what bolt ammo will be used.
-/aacid
-/asleep
-/abloody
-/ablind
-/avenom
-
-Alternatively, use /ammo to cycle through them.
 ```
 
-## Additional Commands for PLD / NIN / DRK:
+## Additional Commands for PLD:
 ```
-/dps - used to turn on or off DPS LowAcc / HighAcc TP set behaviour.
-       i.e. forces you to act more like a tank or a dps.
-       By default PLD is set to false while DRK and NIN are set to true.
-       Technically can be used by all melee jobs in order to use Earth Staff etc.
-```
-
-## Additional Commands for NIN:
-```
-/nuke  - toggles between 2 different elemental accuracy sets for Ninjutsu nuking.
-/staff - toggles between always switching to staff for spells or not.
+/dps - used for PLD to turn on DPS LowAcc / HighAcc TP set behaviour.
 ```
 
 # Troubleshooting Crashes
@@ -232,16 +199,21 @@ Alternatively, use /ammo to cycle through them.
 
  # Additional Notes
 
-- LuAshitacast provides functionality to automatically equip Level Sync gear. This LuAshitacast intentionally does NOT make use of this functionality to make it easier for first time users to be able to copy paste their own gear sets in place of mine. Adding this functionality will make it quite difficult for users on older versions of this LuAshitacast to update and so is not planned to ever be added. It is suggested that you do not attempt to add Level Sync functionality to these luas as it will cause you to be unable to update to newer versions easily. Level Sync content is a joke anyway. Just throw on some garbage gear full time and clear it.
+- LuAshitacast provides functionality to automatically equip Level Sync gear. This LuAshitacast intentionally does NOT make use of this functionality to make it easier for first time users to be able to copy paste their own gear sets in place of mine. Adding this functionality will make it quite difficult for users on older versions of this LuAshitacast to update and so is not planned to ever be added. Level Sync content is a joke anyway. Just throw on some garbage gear full time and clear it.
 
-- HorizonXI's rules on what is legal or not in LuAshitacast is poorly explained and will vary depending on what admin or GM you talk to anyway. This LuAshitacast attempts to abide by the spirit of their rules. Short of any explicit guidance from a GM / HorizonXI Staff, functionality will not be changed to cater for you.
+- Horizon's rules on what is legal or not in LuAshitacast is poorly explained and will vary depending on what admin or GM you talk to anyway. This LuAshitacast attempts to abide by the spirit of their rules.
+
+- e.g. Some users have asked me if equipping movement speed gear to override Dusk gear if they move their character during content is legal. Given that you are pushing movement keys to move your character, I consider this to be legal within the vague guidelines given by HorizonXI. You may disagree. Short of explicit guidance from a GM, this will not be changed to cater for you.
 
 # Contact Me
 
-Do NOT /tell me in game asking for help. You will be ignored. I only respond to Discord Messages.
+Feel free to DM me on Discord for if you encounter bugs or have feature requests or functionality is missing. I am easily found in the HorizonXI or Ashita Discords.
 
-If it's clear you have not bothered to read through this README, you will be ignored.
+Do NOT DM or /tell me in-game regarding your setup issues or if you have not bothered to read through this README and did not follow the instructions written. You will be ignored.
 
-I will also as a rule ignore you as per https://nohello.net/ and https://dontasktoask.com/
+# TODO
+A list of things to do in the future but who knows when I'll get around to them:
+- Refactor everything back out to actual sets on the JOB.lua files so that level sync and Packer validate would potentially work properly.
+- Micro-optimizations with job specific overrides for midcast and respecting max mp sets etc. e.g. WHM should not equip Virology ring when at 100% max mp.
 
-Bug Reports, Missing Functionality or Feature Requests are best done through GitHub's Issue Tracker though feel free to DM me on Discord to discuss these as well.
+Feel free to submit PRs to implement these.

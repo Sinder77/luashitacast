@@ -17,7 +17,7 @@ local federation_aketon = {
     -- Body = 'Federation Aketon',
 }
 local ducal_aketon = {
-    -- Body = 'Ducal Aketon',
+    Body = 'Ducal Aketon',
 }
 local dream_boots = {
     Feet = 'Dream Boots +1',
@@ -30,7 +30,7 @@ local skulkers_cape = {
 }
 
 -- Set this to true to confirm that actually read the README.md and set up the equipment listed above correctly
-local i_can_read_and_follow_instructions_test = false
+local i_can_read_and_follow_instructions_test = true
 
 -- Add additional equipment here that you want to automatically lock when equipping
 local LockableEquipment = {
@@ -122,20 +122,20 @@ function gcinclude.Load()
     gcdisplay.CreateToggle('Kite', false)
     gcdisplay.CreateToggle('Lock', false)
 
-    gcinclude.RetryLoad()
-end
-
-function gcinclude.RetryLoad()
-    local player = gData.GetPlayer()
-    if (player.MainJob ~= 'NON') then
+    local function delayLoad()
         gcdisplay.Load()
 
         if (load_stylist) then
             AshitaCore:GetChatManager():QueueCommand(-1, '/load Stylist')
             AshitaCore:GetChatManager():QueueCommand(-1, '/stylist load default')
         end
+    end
+
+    local player = gData.GetPlayer()
+    if (player.MainJob ~= 'NON') then
+        delayLoad()
     else
-        gcinclude.RetryLoad:once(1)
+        delayLoad:once(3)
     end
 end
 
@@ -239,7 +239,7 @@ function gcinclude.DoDefaultOverride(isMelee)
 
     if (environment.Area ~= nil) and (Towns:contains(environment.Area)) then
         gFunc.EquipSet('Town')
-        gFunc.EquipSet('ducal_aketon')
+       gFunc.EquipSet('ducal_aketon')
     end
     if (environment.Area ~= nil) and (Sandy:contains(environment.Area)) then gFunc.EquipSet('kingdom_aketon') end
     if (environment.Area ~= nil) and (Bastok:contains(environment.Area)) then gFunc.EquipSet('republic_aketon') end
@@ -258,19 +258,24 @@ function gcinclude.DoDefaultOverride(isMelee)
     end
     if (gcdisplay.IdleSet == 'Evasion') then gFunc.EquipSet('Evasion') end
 
-    if (player.IsMoving == true) then
-        if (gcdisplay.IdleSet == 'Normal'
+    if ((player.IsMoving == true)
+        and (
+            gcdisplay.IdleSet == 'Normal'
             or gcdisplay.IdleSet == 'Alternate'
             or gcdisplay.IdleSet == 'DT'
             or gcdisplay.IdleSet == 'Evasion'
-        ) then
-            gFunc.EquipSet('Movement')
+            or gcdisplay.IdleSet == 'LowAcc'
+            or gcdisplay.IdleSet == 'HighAcc'
+        )
+    ) then
+        if (isMageJobs:contains(player.MainJob) and (gcdisplay.GetCycle('TP') ~= 'Off') and player.Status == 'Engaged') then
+            if (environment.Time >= 6 and environment.Time < 18) then
+                gFunc.EquipSet('DT')
+            else
+                gFunc.EquipSet('DTNight')
+            end
         end
-
-        if (player.Status == 'Engaged') then
-            gFunc.EquipSet('Movement')
-            gFunc.EquipSet('Movement_TP')
-        end
+        gFunc.EquipSet('Movement')
     end
 
     if (gcdisplay.IdleSet == 'MDT') then gFunc.EquipSet('MDT') end
@@ -308,8 +313,6 @@ function gcinclude.DoItem()
     elseif (item.Name == 'Prism Powder') then
         gFunc.EquipSet('dream_mittens')
         gFunc.EquipSet('skulkers_cape')
-	elseif (item.Name:startswith("Vile Elixir")) then
-		gFunc.EquipSet('VileElixir')
     end
 end
 

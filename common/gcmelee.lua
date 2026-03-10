@@ -1,29 +1,22 @@
--- The period of time prior to midcast (spell) completion upon which equipment will swap. 
--- 400 milliseconds is provided as a default conservative value which is typically sufficient worldwide but this value can be increased if your internet is completely and consistently shit.
-local minimumBuffer = 0.4
-
--- Change this value to 0.4 if you do not use PacketFlow
-local packetDelay = 0.25
-
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
 local fenrirs_earring = { -- Not used for RNG at all
-    Ear2 = 'Fenrir\'s Earring',
+    --Ear2 = 'Fenrir\'s Earring',
 }
 local muscle_belt = {
-    Waist = 'Muscle Belt +1',
+    --Waist = 'Muscle Belt +1',
 }
 local garden_bangles = {
-    Hands = 'Garden Bangles',
+    --Hands = 'Garden Bangles',
 }
 local presidential_hairpin = {
     -- Head = 'President. Hairpin',
 }
 local dream_ribbon = {
-    Head = 'Dream Ribbon',
+    --Head = 'Dream Ribbon',
 }
 
 -- Set this to true to confirm that actually read the README.md and set up the equipment listed above correctly
-local i_can_read_and_follow_instructions_test = false
+local i_can_read_and_follow_instructions_test = true
 
 --[[
 --------------------------------
@@ -147,6 +140,7 @@ function gcmelee.DoDefault(max_hp_in_idle_with_regen_gear_equipped)
         if (player.HPP < 50) then
             if (MuscleBeltJobs:contains(player.MainJob)) then gFunc.EquipSet('muscle_belt') end
         end
+		
         if (player.HP < max_hp_in_idle_with_regen_gear_equipped) then
             local environment = gData.GetEnvironment()
             if (environment.Time >= 6 and environment.Time < 18) then
@@ -158,6 +152,19 @@ function gcmelee.DoDefault(max_hp_in_idle_with_regen_gear_equipped)
             gFunc.EquipSet('dream_ribbon')
         end
     end
+
+    if (player.Status == 'Idle') then
+        if (player.HPP < 50) then
+            gFunc.EquipSet('muscle_belt')
+        end
+        if (player.HP < max_hp_in_idle_with_regen_gear_equipped) then
+            if (conquest:GetOutsideControl()) then
+                gFunc.EquipSet('presidential_hairpin')
+            end
+            gFunc.EquipSet('dream_ribbon')
+        end
+    end
+
 
     if (isDPS) then
         if (gcdisplay.IdleSet == 'Normal' or gcdisplay.IdleSet == 'Alternate' or gcdisplay.IdleSet == 'LowAcc' or gcdisplay.IdleSet == 'HighAcc') then
@@ -214,51 +221,10 @@ function gcmelee.DoFenrirsEarring()
 end
 
 function gcmelee.DoDefaultOverride()
-    gcinclude.DoDefaultOverride(true)
-
     if (isDPS) then
         gFunc.EquipSet('Weapon_Loadout_' .. WeaponOverrideTable[weapon_override])
     end
-end
-
-function gcmelee.DoPreshot(preshotSet, rangedSet, snapShotValue)
-    gFunc.EquipSet(gFunc.Combine(rangedSet, preshotSet))
-
-    if (not lag) then
-        local rangedString = rangedSet.Range
-        if (rangedString == nil or rangedString == 'displaced' or rangedString == 'empty' or rangedString == 'remove'or rangedString == '') then
-            rangedString = rangedSet.Ammo
-        end
-
-        if (rangedString ~= nil) then
-            local item = AshitaCore:GetResourceManager():GetItemByName(rangedString, 0)
-            if (item ~= nil) then
-                local delay = item.Delay
-
-                -- print(chat.header('Ashitacast'):append(chat.message('Delay is ' .. tostring(delay))))
-
-                local player = gData.GetPlayer()
-                if (player.MainJob == 'RNG' or player.SubJob == "RNG") then
-                    return
-                end
-
-                local shotTime = (delay * 1000) / 120
-
-                local shotDelay = ((shotTime * (1 - snapShotValue)) / 1000) - minimumBuffer
-                if (shotDelay >= packetDelay) then
-                    gFunc.SetMidDelay(shotDelay)
-                end
-            end
-        end
-    end
-end
-
-function gcmelee.DoMidshot(sets, rangedSet)
-    gFunc.EquipSet(rangedSet)
-
-    if (not lag) then
-        gcmelee.SetupInterimEquipSet(sets)
-    end
+    gcinclude.DoDefaultOverride(true)
 end
 
 function gcmelee.DoPrecast(fastCastValue)
@@ -293,7 +259,8 @@ function gcmelee.SetupMidcastDelay(fastCastValue)
     if (player.SubJob == 'RDM') then
          fastCastValue = fastCastValue + 0.15 -- Fast Cast Trait
     end
-
+    local minimumBuffer = 0.4 -- Can be lowered to 0.1 if you want
+    local packetDelay = 0.25 -- Change this to 0.4 if you do not use PacketFlow
     local castDelay = ((castTime * castTimeMod * (1 - fastCastValue)) / 1000) - minimumBuffer
     if (castDelay >= packetDelay) then
         gFunc.SetMidDelay(castDelay)
@@ -314,28 +281,17 @@ end
 function gcmelee.SetupInterimEquipSet(sets)
     local action = gData.GetAction()
 
+    gFunc.InterimEquipSet(sets.DT)
+
     if (SurvivalSpells:contains(action.Name)) then
         gFunc.InterimEquipSet(sets.SIRD)
-    else
-        local ignoreTP = {
-            Main = 'ignore',
-            Sub = 'ignore',
-            Range = 'ignore',
-            Ammo = 'ignore',
-        }
-        local dtTP = gFunc.Combine(sets.DT, ignoreTP)
-        gFunc.InterimEquipSet(dtTP)
     end
 
-    if (gcdisplay.IdleSet == 'DT') then gFunc.InterimEquipSet(sets.DT) end
     if (gcdisplay.IdleSet == 'MDT') then gFunc.InterimEquipSet(sets.MDT) end
     if (gcdisplay.IdleSet == 'FireRes') then gFunc.InterimEquipSet(sets.FireRes) end
     if (gcdisplay.IdleSet == 'IceRes') then gFunc.InterimEquipSet(sets.IceRes) end
     if (gcdisplay.IdleSet == 'LightningRes') then gFunc.InterimEquipSet(sets.LightningRes) end
     if (gcdisplay.IdleSet == 'EarthRes') then gFunc.InterimEquipSet(sets.EarthRes) end
-    if (gcdisplay.IdleSet == 'WindRes') then gFunc.InterimEquipSet(sets.WindRes) end
-    if (gcdisplay.IdleSet == 'WaterRes') then gFunc.InterimEquipSet(sets.WaterRes) end
-    if (gcdisplay.IdleSet == 'Evasion') then gFunc.InterimEquipSet(sets.Evasion) end
 end
 
 function gcmelee.DoWS()

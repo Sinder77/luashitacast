@@ -1,7 +1,6 @@
 local profile = {}
 
 local fastCastValue = 0.00 -- 0% from gear listed in Precast set
-local snapShotValue = 0.00 -- 0% from gear listed in Preshot set
 
 local max_hp_in_idle_with_regen_gear_equipped = 0 -- You could set this to 0 if you do not wish to ever use regen gear
 
@@ -80,22 +79,15 @@ local koga_hakama = {
 local koga_hakama_plus_one = {
     Legs = 'Kog. Hakama +1',
 }
-local bat_earrings = { -- Disabled on horizon_safe_mode
-    -- Ear1 = 'Bat Earring',
-    -- Ear2 = 'Bat Earring',
-}
 
 local sets = {
     Idle = {},
     IdleALT = {},
-    IdleDT = { -- Disabled on horizon_safe_mode
-    },
-    IdleALTDT = { -- Disabled on horizon_safe_mode
-    },
+    IdleDT = {},
+    IdleALTDT = {},
     Resting = {},
     Town = {},
     Movement = {},
-    Movement_TP = {},
 
     DT = {},
     MDT = {},
@@ -138,14 +130,11 @@ local sets = {
     WS_BladeJin = {},
     WS_BladeKu = {},
 
+    Ranged = {},
+
     Weapon_Loadout_1 = {},
     Weapon_Loadout_2 = {},
     Weapon_Loadout_3 = {},
-
-    Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
-    Ranged = {},
-
-    VileElixir = {},
 }
 
 profile.SetMacroBook = function()
@@ -240,11 +229,11 @@ profile.HandleItem = function()
 end
 
 profile.HandlePreshot = function()
-    gcmelee.DoPreshot(sets.Preshot, gFunc.Combine(sets.Preshot, sets.Ranged), snapShotValue)
+    gFunc.EquipSet(sets.Ranged)
 end
 
 profile.HandleMidshot = function()
-    gcmelee.DoMidshot(sets, gFunc.Combine(sets.Preshot, sets.Ranged))
+    gFunc.EquipSet(sets.Ranged)
 end
 
 profile.HandleWeaponskill = function()
@@ -326,13 +315,6 @@ profile.HandleDefault = function()
         end
         if (environment.Time < 7 or environment.Time >= 17) then
             gFunc.EquipSet('koga_hakama_plus_one')
-        end
-
-        if (not gcinclude.horizon_safe_mode) then
-            local blindness = gData.GetBuffCount('Blindness')
-            if (blindness == 1) then
-                gFunc.EquipSet('bat_earrings')
-            end
         end
     end
 

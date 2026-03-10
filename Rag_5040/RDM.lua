@@ -1,7 +1,6 @@
 local profile = {}
 
 local fastCastValue = 0.42 -- 20% from traits 22% from gear listed in Precast set
-local snapShotValue = 0.00 -- 0% from gear listed in Preshot set
 
 local ninSJMaxMP = 583 -- The Max MP you have when /nin in your idle set
 local whmSJMaxMP = 661 -- The Max MP you have when /whm in your idle set
@@ -9,7 +8,7 @@ local blmSJMaxMP = 680 -- The Max MP you have when /blm in your idle set
 local drkSJMaxMP = 604 -- The Max MP you have when /drk in your idle set
 
 -- Disabled on horizon_safe_mode
-local fencersRingForced = true -- Default /fring value
+local fencersRingForced = true
 local fencersRingMaxHP = 907
 
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
@@ -82,10 +81,6 @@ local sets = {
     Movement = {
         Head = 'Dls. Chapeau +1',
         Legs = 'Blood Cuisses',
-    },
-    Movement_TP = {
-        Hands = 'Dst. Mittens +1',
-        Feet = 'Dst. Leggings +1',
     },
 
     DT = {
@@ -670,6 +665,7 @@ local sets = {
         Ammo = 'displaced',
     },
 
+    -- Disabled on horizon_safe_mode
     FencersRingHPDown = { -- 899 - Set to force HP to or below fencersRingMaxHP
         Range = 'Lightning Bow +1',
         Head = 'Zenith Crown +1',
@@ -686,11 +682,6 @@ local sets = {
         Legs = 'Dst. Subligar +1',
         Feet = 'Mahatma Pigaches',
     },
-
-    Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
-    Ranged = {},
-
-    VileElixir = {},
 }
 
 profile.SetMacroBook = function()
@@ -723,11 +714,9 @@ profile.HandleItem = function()
 end
 
 profile.HandlePreshot = function()
-    gcmage.DoPreshot(sets.Preshot, gFunc.Combine(sets.Preshot, sets.Ranged), snapShotValue)
 end
 
 profile.HandleMidshot = function()
-    gcmage.DoMidshot(sets, gFunc.Combine(sets.Preshot, sets.Ranged))
 end
 
 profile.HandleWeaponskill = function()
@@ -758,30 +747,16 @@ profile.HandleWeaponskill = function()
 end
 
 profile.OnLoad = function()
-    if (not gcinclude.horizon_safe_mode) then
-        gcinclude.SetAlias(T{'fring'})
-        gcdisplay.CreateToggle('F-Ring', fencersRingForced)
-    end
-
     gcmage.Load()
     profile.SetMacroBook()
 end
 
 profile.OnUnload = function()
     gcmage.Unload()
-
-    if (not gcinclude.horizon_safe_mode) then
-        gcinclude.ClearAlias(T{'fring'})
-    end
 end
 
 profile.HandleCommand = function(args)
-    if (args[1] == 'fring') then
-        gcdisplay.AdvanceToggle('F-Ring')
-        gcinclude.Message('Fencer\'s Ring', gcdisplay.GetToggle('F-Ring'))
-    else
-        gcmage.DoCommands(args, sets)
-    end
+    gcmage.DoCommands(args, sets)
 
     if (args[1] == 'horizonmode') then
         profile.HandleDefault()
@@ -791,7 +766,7 @@ end
 profile.HandleDefault = function()
     local player = gData.GetPlayer()
     if (not gcinclude.horizon_safe_mode) then
-        if (gcdisplay.GetToggle('F-Ring') and gcdisplay.GetCycle('TP') ~= 'Off' and player.HP > fencersRingMaxHP and player.Status == 'Engaged') then
+        if (fencersRingForced and gcdisplay.GetCycle('TP') ~= 'Off' and player.HP > fencersRingMaxHP and player.Status == 'Engaged') then
             local time = os.clock()
             if (time > nextFencersRingCheck) then
                 nextFencersRingCheck = time + 2 -- only recheck again after 2 seconds to prevent spam if set up incorrectly
@@ -801,7 +776,7 @@ profile.HandleDefault = function()
         end
     end
 
-    gcmage.DoDefault(sets, ninSJMaxMP, whmSJMaxMP, blmSJMaxMP, nil, drkSJMaxMP)
+    gcmage.DoDefault(ninSJMaxMP, whmSJMaxMP, blmSJMaxMP, nil, drkSJMaxMP)
 
     if (player.MP <= 40) then
         gFunc.EquipSet('blue_cotehardie')
@@ -810,13 +785,11 @@ profile.HandleDefault = function()
         gFunc.EquipSet('blue_cotehardie_plus_one')
     end
 
-    gcmage.DoDefaultOverride()
-
     gFunc.EquipSet(gcinclude.BuildLockableSet(gData.GetEquipment()))
 end
 
 profile.HandlePrecast = function()
-    gcmage.DoPrecast(sets, fastCastValue, 0)
+    gcmage.DoPrecast(sets, fastCastValue)
 end
 
 profile.HandleMidcast = function()

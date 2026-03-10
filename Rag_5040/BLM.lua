@@ -1,7 +1,6 @@
 local profile = {}
 
 local fastCastValue = 0.04 -- 4% from gear listed in Precast set
-local snapShotValue = 0.00 -- 0% from gear listed in Preshot set
 
 local ninSJMaxMP = 650 -- The Max MP you have when /nin in your idle set
 local whmSJMaxMP = 728 -- The Max MP you have when /whm in your idle set
@@ -27,25 +26,6 @@ local sorcerers_ring = {
 }
 local sorcerers_tonban = {
     Legs = 'Src. Tonban +1',
-}
-
--- Disabled on horizon_safe_mode
-local sorcerers_earring_hp_threshold = 360 -- HP at which Sorcerer's Earring set is equipped
-local sorcerers_earring = { -- 1440
-    Main = 'Terra\'s Staff',
-    Ammo = 'Hedgehog Bomb',
-    Head = 'Genie Tiara',
-    Neck = 'Pch. Collar',
-    Ear1 = 'Cassie Earring',
-    Ear1 = 'Sorcerer\'s Earring',
-    Body = 'Src. Coat +1',
-    Hands = 'Garden Bangles',
-    Ring1 = 'Bomb Queen Ring',
-    Ring2 = 'Sattva Ring',
-    Back = 'Gigant Mantle',
-    Waist = 'Ocean Sash',
-    Legs = 'Igqira Lappas',
-    Feet = 'Marine M Boots',
 }
 
 local sets = {
@@ -101,7 +81,6 @@ local sets = {
     Movement = {
         Feet = 'Herald\'s Gaiters',
     },
-    Movement_TP = {},
 
     DT = {
         Main = 'Terra\'s Staff',
@@ -263,8 +242,22 @@ local sets = {
         Back = 'Umbra Cape',
     },
     Yellow = { -- This will override Precast if /lag is turned on or the spell casting time is too short. e.g. Tier 1: "Stone"
+        Ammo = 'Tiphia Sting', -- 25
+        Head = 'Zenith Crown +1', -- 55
+        Neck = 'Jeweled Collar +1',
+        Ear1 = 'Loquac. Earring', 
+        Ear2 = 'Magnetic Earring',
+        Body = 'Mahatma Hpl.',
+        Hands = 'Zenith Mitts +1', -- 55
+        Ring1 = 'Ether Ring', -- 30
+        Ring2 = 'Serket Ring', -- 50
+        Back = { Name = 'Prism Cape', Priority = 100 }, -- -10
+        Waist = { Name = 'Penitent\'s Rope', Priority = -100 }, -- 20
+        Legs = 'Igqira Lappas',
+        Feet = 'Rostrum Pumps', -- 30
     },
     YellowHNM = {
+        Back = 'Umbra Cape',
     },
     Haste = { -- Used only on Haste, Refresh, Blink and Utsusemi casts
         Head = 'Nashira Turban', -- 2
@@ -528,17 +521,12 @@ local sets = {
         Back = 'Mahatma Cape',
     },
 
-    Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
-    Ranged = {
-        Ammo = 'Pebble',
-    },
-
-    VileElixir = {},
-
     LockSet1 = {},
     LockSet2 = {},
     LockSet3 = {},
 }
+
+
 
 profile.SetMacroBook = function()
     -- AshitaCore:GetChatManager():QueueCommand(1, '/macro book 1')
@@ -559,7 +547,6 @@ sets.opuntia_hoop = opuntia_hoop
 sets.diabolos_pole = diabolos_pole
 sets.sorcerers_ring = sorcerers_ring
 sets.sorcerers_tonban = sorcerers_tonban
-sets.sorcerers_earring = sorcerers_earring
 profile.Sets = gcmage.AppendSets(sets)
 
 profile.HandleAbility = function()
@@ -571,11 +558,9 @@ profile.HandleItem = function()
 end
 
 profile.HandlePreshot = function()
-    gcmage.DoPreshot(sets.Preshot, gFunc.Combine(sets.Preshot, sets.Ranged), snapShotValue)
 end
 
 profile.HandleMidshot = function()
-    gcmage.DoMidshot(sets, gFunc.Combine(sets.Preshot, sets.Ranged))
 end
 
 profile.HandleWeaponskill = function()
@@ -607,7 +592,7 @@ profile.HandleCommand = function(args)
 end
 
 profile.HandleDefault = function()
-    gcmage.DoDefault(sets, ninSJMaxMP, whmSJMaxMP, nil, rdmSJMaxMP, nil)
+    gcmage.DoDefault(ninSJMaxMP, whmSJMaxMP, nil, rdmSJMaxMP, nil)
 
     local spikes = gData.GetBuffCount('Blaze Spikes') + gData.GetBuffCount('Shock Spikes') + gData.GetBuffCount('Ice Spikes')
     local isPhysical = gcdisplay.IdleSet == 'Normal' or gcdisplay.IdleSet == 'Alternate' or gcdisplay.IdleSet == 'DT'
@@ -615,25 +600,16 @@ profile.HandleDefault = function()
         gFunc.EquipSet('opuntia_hoop')
     end
 
-    local player = gData.GetPlayer()
-    if (not gcinclude.horizon_safe_mode) then
-        if (player.HP <= sorcerers_earring_hp_threshold) then
-            gFunc.EquipSet('sorcerers_earring')
-        end
-    end
-
-    gcmage.DoDefaultOverride()
-
     gFunc.EquipSet(gcinclude.BuildLockableSet(gData.GetEquipment()))
 end
 
 profile.HandlePrecast = function()
     local player = gData.GetPlayer()
     if (player.SubJob == 'RDM' and warlocks_mantle.Back) then
-        gcmage.DoPrecast(sets, fastCastValue + 0.02, 0)
+        gcmage.DoPrecast(sets, fastCastValue + 0.02)
         gFunc.EquipSet('warlocks_mantle')
     else
-        gcmage.DoPrecast(sets, fastCastValue, 0)
+        gcmage.DoPrecast(sets, fastCastValue)
     end
 end
 
