@@ -450,3 +450,65 @@
 
 ### v2.0.10
 - Mages - Use Enhancing set for sneak / invisible
+
+### v2.0.11
+- BLM - Implements BLM sorceror's earring logic
+- All Jobs - Implements Movement_TP set to better differentiate movement sets when idle vs engaged
+- Mages - Implements /tptoggle command to allow single button toggling between last TP set and Off
+
+### v2.0.12
+- RNG - Implements fenrirs earring
+- RNG - Implements fire ring
+- RNG - Implements WS modifier sets for different accuracy levels on WS
+- RNG - Implements Sam SubJob set on WS for Store TP
+
+### v2.0.13
+- Mages - Adds a variable (use_staves_for_elemental_debuffs) to allow staves or claustrum to be used for elemental debuffs (DoTs)
+- BRD - Prevents ConserveMP set from ever being used for Songs
+- WHM - Adds a Benediction set for max -enmity on usage
+- WHM - Adds a variable (cureCastMeritValue) for merits
+- SMN - Uses both Evokers Boots and Carbuncles Cuffs for spirits since Horizon's "rebase" should fix this
+- SMN - Only use BP_Delay on Blood Pact type job abilities
+
+### v2.0.14
+- Melee - Still uses the DT set for default interim casts of spells but strips any weapons etc. to prevent TP loss. Utsusemi casts etc. still use SIRD.
+- Rebase client takes significantly longer to make job info available to luashitacast resulting in some toggles not being available on initial character log in. This update retries fetching job information until it succeeds to fix this.
+
+### v2.0.15
+- Melee - Fixes issues with muscle_belt, presidential hairpin, and dream ribbon implementation
+
+### v2.0.16
+- WHM - Fixes Yellow set behaviour (medicine ring) from throwing errors.
+
+### v2.0.17
+- SMN - Adds a BP_Healing set if -enmity desired for Healing Ruby etc.
+- WHM - Adds config options to enable correct usage of medicine ring when in max mp set.
+- BST, THF, WAR, Mages - Fixes TP_NIN set behaviour so that TP_NIN is only equipped if the offhand (Sub) is a 1h weapon. 
+                       - In the case of WAR, removes DW entirely to automate this behaviour and renames the SAM set to TP_SAM for consistency.
+
+### v2.0.18
+- WHM - Fixes virology ring usage when at max Idle mp similar to medicine ring.
+- Mages  / BST (Gaudy Harness) - Optimizes override sets e.g. FireRes etc. to take priority over similar to Melee jobs
+- BRD - Implements Gaudy Harness
+- NIN - Implements Bat Earrings (gated via horizon_safe_mode)
+
+### v2.0.19
+- THF - Fixes Auto-TH for abilities and ranged attacks after Horizon -> LSB rebase
+
+### v2.0.20
+- THF - Adds a None ranged attack set for use where no xbow ranged attacks are expected to be used. e.g. Bomb Core
+
+### v2.1.0
+- All Jobs - Implements ranged attacks. A preshot set is provided as well but has no utility without access to Snapshot equipment ToAU+
+
+### v2.1.1
+- Mages - Fixes an issue with using staves in TP mode and losing TP when above max mp vals
+- SMN - Fix Conjurer's Ring to not truncate HP when pet is not summoned
+- RDM - Implements /fring toggle for RDM Fencer's Ring. The previous fencersRingForced boolean value is used as the default starting value
+- SMN - Implements /cring toggle for SMN Conjurer's Ring. The previous conjurersRingForced boolean value is used as the default starting value
+- All Jobs - Implements a Vile Elixir set.
+
+### v2.1.2
+- Mages - Removes checks on Elemental Obis for negative days / weather as these don't exist on LSB
+- BLM - Adds a check for Claustrum and Double Weather + Day for Sorcerer's Tonban
+- NIN - Adds Shinobi Ring functionality similar to Fencer's / Conjurer's Ring
