@@ -1,6 +1,13 @@
 local profile = {}
 
 local fastCastValue = 0.00 -- 0% from gear listed in Precast set
+local snapShotValue = 0.00 -- 0% from gear listed in Preshot set
+
+local max_hp_in_idle_with_regen_gear_equipped = 0 -- You could set this to 0 if you do not wish to ever use regen gear
+
+-- Disabled on horizon_safe_mode
+local shinobiRingForced = true -- Default /sring value
+local shinobiRingMaxHP = 1000
 
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
 local fire_staff = {
@@ -77,15 +84,22 @@ local koga_hakama = {
 local koga_hakama_plus_one = {
     Legs = 'Kog. Hakama +1',
 }
+local bat_earrings = { -- Disabled on horizon_safe_mode
+    -- Ear1 = 'Bat Earring',
+    -- Ear2 = 'Bat Earring',
+}
 
 local sets = {
     Idle = {},
     IdleALT = {},
-    IdleDT = {},
-    IdleALTDT = {},
+    IdleDT = { -- Disabled on horizon_safe_mode
+    },
+    IdleALTDT = { -- Disabled on horizon_safe_mode
+    },
     Resting = {},
     Town = {},
     Movement = {},
+    Movement_TP = {},
 
     DT = {},
     MDT = {},
@@ -128,11 +142,17 @@ local sets = {
     WS_BladeJin = {},
     WS_BladeKu = {},
 
-    Ranged = {},
-
     Weapon_Loadout_1 = {},
     Weapon_Loadout_2 = {},
     Weapon_Loadout_3 = {},
+
+    ShinobiRingHPDown = { -- Set to force HP to or below shinobiRingMaxHP
+    },
+
+    Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
+    Ranged = {},
+
+    VileElixir = {},
 }
 
 profile.SetMacroBook = function()
@@ -174,6 +194,8 @@ sets.koga_hakama = koga_hakama
 sets.koga_hakama_plus_one = koga_hakama_plus_one
 profile.Sets = gcmelee.AppendSets(sets)
 
+local nextShinobiRingCheck = 0
+
 local NinDebuffs = T{ 'Kurayami: Ni', 'Hojo: Ni', 'Jubaku: Ichi', 'Dokumori: Ichi', 'Kurayami: Ichi', 'Hojo: Ichi' }
 local HateDebuffs = T{ 'Bind', 'Sleep', 'Poison', 'Blind' }
 local DrkDarkMagic = T{ 'Stun', 'Aspir', 'Drain', 'Absorb-AGI', 'Absorb-VIT' }
@@ -203,17 +225,6 @@ local NukeObiOwnedTable = {
     ['Thunder'] = 'rairin_obi',
     ['Light'] = 'korin_obi',
     ['Dark'] = 'anrin_obi'
-}
-
-local WeakElementTable = {
-    ['Fire'] = 'Water',
-    ['Earth'] = 'Wind',
-    ['Water'] = 'Thunder',
-    ['Wind'] = 'Ice',
-    ['Ice'] = 'Fire',
-    ['Thunder'] = 'Earth',
-    ['Light'] = 'Dark',
-    ['Dark'] = 'Light'
 }
 
 profile.HandleAbility = function()
