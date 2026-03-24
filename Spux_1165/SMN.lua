@@ -2,7 +2,9 @@ local profile = {}
 
 local fastCastValue = 0.00 -- 4% from gear listed in Precast set not including carbuncles cuffs or evokers boots
 
-local cureMP = 895 -- Cure set max MP
+local cureMP = 895 -- Cure set max MP-- Disabled on horizon_safe_mode
+local conjurersRingForced = true
+local conjurersRingMaxHP = 737
 
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
 local carbuncles_cuffs = {
@@ -12,7 +14,7 @@ local evokers_boots = {
 --    Feet = 'Evoker\'s Boots',
 }
 local warlocks_mantle = { -- Don't add 2% to fastCastValue for this as it is SJ dependant
-    Back = 'Warlock\'s Mantle',
+   -- Back = 'Warlock\'s Mantle',
 }
 local carbuncle_mitts = {
     Hands = 'Carbuncle Mitts',
@@ -21,16 +23,16 @@ local yinyang_robe = {
     Body = 'Yinyang Robe',
 }
 local summoners_doublet = {
---    Body = 'Smn. Doublet +1',
+    --Body = 'Smn. Doublet +1',
 }
 local summoners_horn = {
---    Head = 'Summoner\'s Horn',
+    --Head = 'Summoner\'s Horn',
 }
 local conjurers_ring = {
-    -- Ring1 = 'Conjurer\'s Ring',
+    --Ring1 = 'Conjurer\'s Ring',
 }
 local bahamuts_staff = {
-   --Main = 'Bahamut\'s Staff',
+    -- Main = 'Bahamut\'s Staff',
 }
 
 
@@ -389,21 +391,7 @@ local sets = {
 	
 	
 	
-       --[[ Head = 'Summoner\'s Horn',
-        Legs = 'Summoner\'s Spats',
-        Ring2 = 'Evoker\'s Ring',
-        Ear1 = 'Loquac. Earring',
-        Ear2 = 'Novia Earring',
-        Ring1 = { Name = 'Bomb Queen Ring', Priority = 100 },
-        Back = 'Errant Cape',
-        Body = 'Yinyang Robe',
-        Hands = { Name = 'Smn. Bracers +1', Priority = 100 },
-        Feet = 'Summoner\'s Pgch.',
-        Ammo = 'Hedgehog Bomb',
-        Waist = { Name = 'Penitent\'s Rope', Priority = -1 },
-        Neck = 'Smn. Torque',Base
-    },
-	]]
+ 
 
     BP = { --Default Smn SKILL
         Head = 'Evoker\'s Horn', -- 'Austere Hat', }, --'Summoner\'s Horn',
@@ -622,7 +610,7 @@ profile.HandleDefault = function()
             gFunc.EquipSet(sets.BP_Physical)
             gFunc.EquipSet(sets.BP_Hybrid)
         elseif (SmnHealing:contains(petAction.Name)) then
-            gFunc.EquipSet(sets.BP_Healing)
+            -- Do Nothing
         elseif (SmnEnfeebling:contains(petAction.Name)) then
             gFunc.EquipSet(sets.BP_Magical)
         else
