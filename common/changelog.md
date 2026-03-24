@@ -512,3 +512,15 @@
 - Mages - Removes checks on Elemental Obis for negative days / weather as these don't exist on LSB
 - BLM - Adds a check for Claustrum and Double Weather + Day for Sorcerer's Tonban
 - NIN - Adds Shinobi Ring functionality similar to Fencer's / Conjurer's Ring
+
+### v2.1.3
+- Reverts v2.0.10 where the Enhancing set is used for sneak / invisible
+- Updates Documentation, particularly to include notes on correct set composition
+- Allows argument passing to /tp on mages to allow switching between tp modes while not dumping TP
+
+### v2.1.4
+- Fixed mage /ra implementation to ignore ranged slots while still using interim equip sets
+
+### v2.1.5
+- NIN - Adds a /bat toggle for bat earrings if using horizon_safe_mode
+- SMN - Improves BP set granularity for some Horizon-specific gear and Garuda

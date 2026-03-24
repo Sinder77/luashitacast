@@ -120,8 +120,13 @@ local tp_diabolos_earring = {
     -- Ear2 = 'Diabolos\'s Earring',
 }
 
+<<<<<<< HEAD
 -- Set this to true to confirm that actually read the README.md and set up the equipment listed above correctly
 local i_can_read_and_follow_instructions_test = true
+=======
+-- Set this to true to confirm that you actually read the README.md and set up the equipment listed above correctly
+local i_can_read_and_follow_instructions_test = false
+>>>>>>> upstream/master
 
 --[[
 --------------------------------
@@ -202,6 +207,12 @@ local tpCycleToggleIndexTable = {
     ['Off'] = 2, -- Default into toggling into LowAcc
     ['LowAcc'] = 2,
     ['HighAcc'] = 3,
+}
+
+local tpCycleIndexes = {
+    ['off'] = 1,
+    ['lowacc'] = 2,
+    ['highacc'] = 3,
 }
 
 local setMP = 0
@@ -292,9 +303,21 @@ function gcmage.DoCommands(args, sets)
         gcdisplay.AdvanceCycle('Mode')
         gcinclude.Message('Magic Mode', gcdisplay.GetCycle('Mode'))
     elseif (args[1] == 'tp' and player.MainJob ~= 'BLM') then
-        gcdisplay.AdvanceCycle('TP')
-        gcinclude.Message('TP Mode', gcdisplay.GetCycle('TP'))
-        tpCycleToggleIndex = tpCycleToggleIndexTable[gcdisplay.GetCycle('TP')]
+        if (args[2] ~= nil) then
+            local cycleIndex = tpCycleIndexes[args[2]]
+            if (cycleIndex ~= nil) then
+                gcdisplay.SetCycleIndex('TP', cycleIndex)
+
+                gcinclude.Message('TP Mode', gcdisplay.GetCycle('TP'))
+                tpCycleToggleIndex = tpCycleToggleIndexTable[gcdisplay.GetCycle('TP')]
+            else
+                gcinclude.Message('Invalid argument given. TP Mode', gcdisplay.GetCycle('TP'))
+            end
+        else
+            gcdisplay.AdvanceCycle('TP')
+            gcinclude.Message('TP Mode', gcdisplay.GetCycle('TP'))
+            tpCycleToggleIndex = tpCycleToggleIndexTable[gcdisplay.GetCycle('TP')]
+        end
     elseif (args[1] == 'tptoggle' and player.MainJob ~= 'BLM') then
         if (gcdisplay.GetCycle('TP') == 'Off') then
             gcdisplay.SetCycleIndex('TP', tpCycleToggleIndex)
@@ -730,7 +753,7 @@ function gcmage.DoMidcast(sets, ninSJMMP, whmSJMMP, blmSJMMP, rdmSJMMP, drkSJMMP
 
     if (chainspell == 0 and not lag) then
         if not (player.MainJob == 'BLM' and gcdisplay.GetToggle('Extra') and player.MP >= blmSJMMP) then
-            gcmage.SetupInterimEquipSet(sets)
+            gcmage.SetupInterimEquipSet(sets, false)
         end
     end
 
@@ -823,11 +846,9 @@ function gcmage.EquipSneakInvisGear()
 
     if (target.Name == me) then
         if (action.Name == 'Sneak' or string.match(action.Name, 'Monomi')) then
-            gFunc.EquipSet('Enhancing')
             gFunc.EquipSet('dream_boots')
             gFunc.EquipSet('skulkers_cape')
         elseif (action.Name == 'Invisible' or string.match(action.Name, 'Tonko')) then
-            gFunc.EquipSet('Enhancing')
             gFunc.EquipSet('dream_mittens')
             gFunc.EquipSet('skulkers_cape')
         end
@@ -870,11 +891,11 @@ function gcmage.DoMidshot(sets, rangedSet)
     gFunc.EquipSet(rangedSet)
 
     if (not lag) then
-        gcmage.SetupInterimEquipSet(sets)
+        gcmage.SetupInterimEquipSet(sets, true)
     end
 end
 
-function gcmage.SetupInterimEquipSet(sets)
+function gcmage.SetupInterimEquipSet(sets, isRanged)
     local environment = gData.GetEnvironment()
     local player = gData.GetPlayer()
     local action = gData.GetAction()
@@ -903,6 +924,14 @@ function gcmage.SetupInterimEquipSet(sets)
 
     if (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
         interimSet = gFunc.Combine(interimSet, sets['Weapon_Loadout_' .. WeaponOverrideTable[weapon_override]])
+    end
+
+    if (isRanged) then
+        local ignoreRA = {
+            Range = 'ignore',
+            Ammo = 'ignore',
+        }
+        interimSet = gFunc.Combine(interimSet, ignoreRA)
     end
 
     gFunc.InterimEquipSet(interimSet)

@@ -15,8 +15,13 @@ local dream_ribbon = {
     --Head = 'Dream Ribbon',
 }
 
+<<<<<<< HEAD
 -- Set this to true to confirm that actually read the README.md and set up the equipment listed above correctly
 local i_can_read_and_follow_instructions_test = true
+=======
+-- Set this to true to confirm that you actually read the README.md and set up the equipment listed above correctly
+local i_can_read_and_follow_instructions_test = false
+>>>>>>> upstream/master
 
 --[[
 --------------------------------
