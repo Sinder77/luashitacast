@@ -36,7 +36,7 @@ local mjollnir = {
 local asklepios = { -- Used for Cures with Mjollnir when /NIN
     -- Sub = 'Asklepios',
 }
-
+local sets = {
     Idle = {
 		Main = 'Terra\'s Staff',
 		Ammo = 'Fortune Egg',
@@ -54,9 +54,8 @@ local asklepios = { -- Used for Cures with Mjollnir when /NIN
 		Feet = 'Healer\'s Duckbills',
 	
 	},
-    IdleALT = {
-		
-	},
+    IdleALT = {},
+	
     IdleMaxMP = {
 	Head = 'Healer\'s Cap',
 	Neck = 'Spirit Torque',
@@ -381,16 +380,11 @@ local asklepios = { -- Used for Cures with Mjollnir when /NIN
 	--Legs = 'Cleric\'s Pantaln.',
 	--Feet = 'Healer\'s duckbills',
 	},
-	
-}
     Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
     Ranged = {},
 
     VileElixir = {},
 }
-	
-	
-profile.Sets = sets
 
 profile.SetMacroBook = function()
     AshitaCore:GetChatManager():QueueCommand(1, '/macro book 1')
