@@ -518,6 +518,7 @@ Everything below can be ignored.
 gcmage = gFunc.LoadFile('common\\gcmage.lua')
 
 sets.warlocks_mantle = warlocks_mantle
+sets.gaudy_harness = gaudy_harness
 profile.Sets = gcmage.AppendSets(sets)
 
 profile.HandleAbility = function()
@@ -529,9 +530,11 @@ profile.HandleItem = function()
 end
 
 profile.HandlePreshot = function()
+    gcmage.DoPreshot(sets.Preshot, gFunc.Combine(sets.Preshot, sets.Ranged), snapShotValue)
 end
 
 profile.HandleMidshot = function()
+    gcmage.DoMidshot(sets, gFunc.Combine(sets.Preshot, sets.Ranged))
 end
 
 profile.HandleWeaponskill = function()
@@ -555,7 +558,6 @@ end
 
 profile.OnUnload = function()
     gcmage.Unload()
-	AshitaCore:GetChatManager():QueueCommand(-1, '/unbind !DELETE /ma "Chocobo Mazurka" <me>');
     gcinclude.ClearAlias(T{'sballad','shorde','srecast'})
 end
 
@@ -578,9 +580,19 @@ profile.HandleCommand = function(args)
     end
 end
 
+local MPJobs = T{ 'RDM','BLM','WHM','SMN' }
+
 profile.HandleDefault = function()
-     gcmage.DoDefault(nil, whmSJMaxMP, blmSJMaxMP, rdmSJMaxMP, nil)
-	gFunc.LockStyle(sets.Lockstyle)
+    gcmage.DoDefault(sets, nil, whmSJMaxMP, blmSJMaxMP, rdmSJMaxMP, nil)
+
+    local player = gData.GetPlayer()
+    local isMPSJ = MPJobs:contains(player.SubJob)
+    if (player.MP < 50 and isMPSJ) then
+        gFunc.EquipSet('gaudy_harness')
+    end
+
+    gcmage.DoDefaultOverride()
+
     gFunc.EquipSet(gcinclude.BuildLockableSet(gData.GetEquipment()))
 end
 
@@ -598,11 +610,12 @@ profile.HandlePrecast = function()
         totalfcv = 1 - (1 - fastCastValueSong) * (1 - fcv)
     end
 
-    gcmage.DoPrecast(sets, totalfcv)
+    gcmage.DoPrecast(sets, totalfcv, 0)
     if (fcv ~= fastCastValue) then
         gFunc.EquipSet('warlocks_mantle')
     end
 end
+
 
 profile.HandleMidcast = function()
     gcmage.DoMidcast(sets, ninSJMaxMP, whmSJMaxMP, blmSJMaxMP, rdmSJMaxMP, nil)

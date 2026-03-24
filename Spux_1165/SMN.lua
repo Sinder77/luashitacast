@@ -554,7 +554,10 @@ local nextConjurersRingCheck = 0
 profile.HandleAbility = function()
     gcmage.DoAbility()
 
-    gFunc.EquipSet('BP_Delay')
+    local action = gData.GetAction()
+    if (string.match(action.Type, 'Blood')) then
+        gFunc.EquipSet('BP_Delay')
+    end
 end
 
 profile.HandleItem = function()
@@ -562,9 +565,11 @@ profile.HandleItem = function()
 end
 
 profile.HandlePreshot = function()
+    gcmage.DoPreshot(sets.Preshot, gFunc.Combine(sets.Preshot, sets.Ranged), snapShotValue)
 end
 
 profile.HandleMidshot = function()
+    gcmage.DoMidshot(sets, gFunc.Combine(sets.Preshot, sets.Ranged))
 end
 
 profile.HandleWeaponskill = function()
@@ -576,19 +581,30 @@ profile.HandleWeaponskill = function()
 end
 
 profile.OnLoad = function()
+    if (not gcinclude.horizon_safe_mode) then
+        gcinclude.SetAlias(T{'cring'})
+        gcdisplay.CreateToggle('C-Ring', conjurersRingForced)
+    end
+
     gcmage.Load()
     profile.SetMacroBook()
-AshitaCore:GetChatManager():QueueCommand(-1, '/bind !` /ja Release <me>');
-AshitaCore:GetChatManager():QueueCommand(-1, '/bind numpad0 /ja Assault <stnpc>');
-
 end
 
 profile.OnUnload = function()
     gcmage.Unload()
+
+    if (not gcinclude.horizon_safe_mode) then
+        gcinclude.ClearAlias(T{'cring'})
+    end
 end
 
 profile.HandleCommand = function(args)
-    gcmage.DoCommands(args, sets)
+    if (args[1] == 'cring') then
+        gcdisplay.AdvanceToggle('C-Ring')
+        gcinclude.Message('Conjurer\'s Ring', gcdisplay.GetToggle('C-Ring'))
+    else
+        gcmage.DoCommands(args, sets)
+    end
 
     if (args[1] == 'horizonmode') then
         profile.HandleDefault()
@@ -600,7 +616,6 @@ profile.HandleDefault = function()
     if (petAction ~= nil) then
         gFunc.EquipSet('BP')
 
-        -- Era provides near zero gear options so almost all of these just default to the default BP set or Magical
         if (SmnSkill:contains(petAction.Name)) then
             -- Do Nothing
         elseif (SmnMagical:contains(petAction.Name)) then
@@ -610,7 +625,7 @@ profile.HandleDefault = function()
             gFunc.EquipSet(sets.BP_Physical)
             gFunc.EquipSet(sets.BP_Hybrid)
         elseif (SmnHealing:contains(petAction.Name)) then
-            -- Do Nothing
+            gFunc.EquipSet(sets.BP_Healing)
         elseif (SmnEnfeebling:contains(petAction.Name)) then
             gFunc.EquipSet(sets.BP_Magical)
         else
@@ -622,7 +637,7 @@ profile.HandleDefault = function()
     else
         if (not gcinclude.horizon_safe_mode) then
             local player = gData.GetPlayer()
-            if (conjurersRingForced and player.HP >= conjurersRingMaxHP) then
+            if (gcdisplay.GetToggle('C-Ring') and player.HP >= conjurersRingMaxHP and gData.GetPet()) then
                 local time = os.clock()
                 if (time > nextConjurersRingCheck) then
                     nextConjurersRingCheck = time + 3 -- only recheck again after 3 seconds to prevent spam
@@ -633,30 +648,25 @@ profile.HandleDefault = function()
         end
 
         gcmage.DoDefault(sets, nil, nil, nil, nil, nil)
+        gcmage.DoDefaultOverride()
     end
     gFunc.EquipSet(gcinclude.BuildLockableSet(gData.GetEquipment()))
-	gFunc.LockStyle(sets.Lockstyle)
 end
 
 profile.HandlePrecast = function()
     local player = gData.GetPlayer()
     if (player.SubJob == 'RDM' and warlocks_mantle.Back) then
-        gcmage.DoPrecast(sets, fastCastValue + 0.02)
+        gcmage.DoPrecast(sets, fastCastValue + 0.02, 0)
         gFunc.EquipSet('warlocks_mantle')
     else
-        gcmage.DoPrecast(sets, fastCastValue)
+        gcmage.DoPrecast(sets, fastCastValue, 0)
     end
 
     local action = gData.GetAction()
     if (action.Skill == 'Summoning') then
-        if (carbuncles_cuffs.Hands and evokers_boots.Feet and string.match(action.Name, 'Spirit')) then -- Handling for bugged casting if you own both
-            gFunc.EquipSet('carbuncles_cuffs')
-        else
-            gFunc.EquipSet('carbuncles_cuffs')
-            gFunc.EquipSet('evokers_boots')
-        end
+        gFunc.EquipSet('carbuncles_cuffs')
+        gFunc.EquipSet('evokers_boots')
     end
-
 end
 
 profile.HandleMidcast = function()
