@@ -1,6 +1,9 @@
 local profile = {}
 
 local fastCastValue = 0.00 -- 0% from gear listed in Precast set. Note: Do NOT include cure clogs / ruckes rung here.
+local cureCastMeritValue = 0.00 -- The Cure Cast Time Merits you have on your character (up to 0.2 in era).
+
+local snapShotValue = 0.00 -- 0% from gear listed in Preshot set
 
 local ninSJMaxMP = nil -- The Max MP you have when /nin in your idle set
 local rdmSJMaxMP = nil -- The Max MP you have when /rdm in your idle set
@@ -40,6 +43,7 @@ local sets = {
     Resting = {},
     Town = {},
     Movement = {},
+    Movement_TP = {},
 
     DT = {},
     DTNight = {},
@@ -70,6 +74,7 @@ local sets = {
     Yellow = {},
     Cure = {},
     Cure5 = {},
+    Benediction = {},
     Regen = {
         Body = 'Cleric\'s Bliaut',
     },
@@ -109,6 +114,11 @@ local sets = {
     Weapon_Loadout_1 = {},
     Weapon_Loadout_2 = {},
     Weapon_Loadout_3 = {},
+
+    Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
+    Ranged = {},
+
+    VileElixir = {},
 }
 
 profile.SetMacroBook = function()
@@ -136,6 +146,11 @@ profile.Sets = gcmage.AppendSets(sets)
 
 profile.HandleAbility = function()
     gcmage.DoAbility()
+
+    local action = gData.GetAction()
+    if (action.Name == 'Benediction') then
+        gFunc.EquipSet(sets.Benediction)
+    end
 end
 
 profile.HandleItem = function()
@@ -143,9 +158,11 @@ profile.HandleItem = function()
 end
 
 profile.HandlePreshot = function()
+    gcmage.DoPreshot(sets.Preshot, gFunc.Combine(sets.Preshot, sets.Ranged), snapShotValue)
 end
 
 profile.HandleMidshot = function()
+    gcmage.DoMidshot(sets, gFunc.Combine(sets.Preshot, sets.Ranged))
 end
 
 profile.HandleWeaponskill = function()
@@ -180,18 +197,18 @@ profile.HandleCommand = function(args)
 end
 
 profile.HandleDefault = function()
-    gcmage.DoDefault(ninSJMaxMP, nil, blmSJMaxMP, rdmSJMaxMP, drkSJMaxMP)
-
+    gcmage.DoDefault(sets, ninSJMaxMP, nil, blmSJMaxMP, rdmSJMaxMP, drkSJMaxMP)
+    gcmage.DoDefaultOverride()
     gFunc.EquipSet(gcinclude.BuildLockableSet(gData.GetEquipment()))
 end
 
 profile.HandlePrecast = function()
     local player = gData.GetPlayer()
     if (player.SubJob == 'RDM' and warlocks_mantle.Back) then
-        gcmage.DoPrecast(sets, fastCastValue + 0.02)
+        gcmage.DoPrecast(sets, fastCastValue + 0.02, cureCastMeritValue)
         gFunc.EquipSet('warlocks_mantle')
     else
-        gcmage.DoPrecast(sets, fastCastValue)
+        gcmage.DoPrecast(sets, fastCastValue, cureCastMeritValue)
     end
 end
 
@@ -215,8 +232,6 @@ profile.HandleMidcast = function()
                 gFunc.EquipSet('republic_circlet')
             end
         end
-    elseif (string.match(action.Name, '.*na$') or (action.Name == 'Erase')) then
-        gFunc.EquipSet('virology_ring')
     end
 end
 
