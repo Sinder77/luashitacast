@@ -89,14 +89,14 @@ local sets = {
     Town = {
 	Head = 'Evoker\'s Horn',
 	Body = 'Yinyang Robe',},
-    Movement = {
+	
+	 Movement = {
         Feet = 'Herald\'s Gaiters',
     },
+     Movement_TP = {},
 
-    Perpetuation = { 
-	
-	Body = 'Yinyang Robe',
-	-- There is no point in using this set over an Idle set except for equipping Penance Robe
+    Perpetuation = { -- There is no point in using this set over an Idle set except for equipping Penance Robe
+        -- Body = 'Penance Robe',
     },
 
     DT = {
@@ -483,7 +483,10 @@ local sets = {
 		Feet = 'Summoner\'s Pgch.',-- 'Austere Sabots' },
     },
 
-     TP = {
+        BP_Healing = { -- This set is pointless unless your server penalizes healing BPs by attributing amount healed enmity to you.
+    },
+
+    TP = {
         Ring1 = 'Jelly Ring',
     },
     TP_Mjollnir_Haste = {},
@@ -550,11 +553,13 @@ sets.conjurers_ring = conjurers_ring
 sets.bahamuts_staff = bahamuts_staff
 profile.Sets = gcmage.AppendSets(sets)
 
-local SmnSkill = T{'Shining Ruby','Glittering Ruby','Crimson Howl','Inferno Howl','Frost Armor','Crystal Blessing','Aerial Armor','Hastega II','Fleet Wind','Hastega','Earthen Ward','Earthen Armor','Rolling Thunder','Lightning Armor','Soothing Current','Ecliptic Growl','Heavenward Howl','Ecliptic Howl','Noctoshield','Dream Shroud','Altana\'s Favor','Reraise','Reraise II','Reraise III','Raise','Raise II','Raise III','Wind\'s Blessing'}
-local SmnHealing = T{'Healing Ruby','Healing Ruby II','Whispering Wind','Spring Water'}
+-- Includes Chaotic Strike and Shock Strike in SmnSkill to maximize stun chance
+local SmnSkill = T{'Shining Ruby','Glittering Ruby','Crimson Howl','Inferno Howl','Frost Armor','Crystal Blessing','Aerial Armor','Hastega II','Fleet Wind','Hastega','Earthen Ward','Earthen Armor','Rolling Thunder','Lightning Armor','Soothing Current','Ecliptic Growl','Heavenward Howl','Ecliptic Howl','Noctoshield','Dream Shroud','Altana\'s Favor','Reraise','Reraise II','Reraise III','Raise','Raise II','Raise III','Wind\'s Blessing','Spring Water','Shock Strike','Chaotic Strike'}
+local SmnHealing = T{'Healing Ruby','Healing Ruby II','Whispering Wind'}
 local SmnMagical = T{'Searing Light','Meteorite','Holy Mist','Inferno','Fire II','Fire IV','Meteor Strike','Conflag Strike','Diamond Dust','Blizzard II','Blizzard IV','Heavenly Strike','Aerial Blast','Aero II','Aero IV','Wind Blade','Earthen Fury','Stone II','Stone IV','Geocrush','Judgement Bolt','Thunder II','Thunder IV','Thunderstorm','Thunderspark','Tidal Wave','Water II','Water IV','Grand Fall','Howling Moon','Lunar Bay','Ruinous Omen','Somnolence','Nether Blast','Night Terror','Level ? Holy'}
 local SmnEnfeebling = T{'Diamond Storm','Sleepga','Shock Squall','Slowga','Tidal Roar','Pavor Nocturnus','Ultimate Terror','Nightmare','Mewing Lullaby','Eerie Eye'}
 local SmnHybrid = T{'Flaming Crush','Burning Strike'}
+local SmnCrit = T{'Predator Claws','Claw'}
 
 local nextConjurersRingCheck = 0
 
@@ -612,14 +617,19 @@ profile.HandleDefault = function()
             -- Do Nothing
         elseif (SmnMagical:contains(petAction.Name)) then
             gFunc.EquipSet(sets.BP_Magical)
+            gFunc.EquipSet(sets.BP_Magical_Potency)
         elseif (SmnHybrid:contains(petAction.Name)) then
+            gFunc.EquipSet(sets.BP_Physical)
             gFunc.EquipSet(sets.BP_Hybrid)
         elseif (SmnHealing:contains(petAction.Name)) then
-            -- Do Nothing
+            gFunc.EquipSet(sets.BP_Healing)
         elseif (SmnEnfeebling:contains(petAction.Name)) then
             gFunc.EquipSet(sets.BP_Magical)
         else
             gFunc.EquipSet(sets.BP_Physical)
+            if (SmnCrit:contains(petAction.Name)) then
+                gFunc.EquipSet(sets.BP_Physical_Crit)
+            end
         end
     else
         if (not gcinclude.horizon_safe_mode) then

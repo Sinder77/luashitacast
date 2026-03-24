@@ -1,3 +1,5 @@
+-- Rag
+
 local profile = {}
 
 local fastCastValue = 0.04 -- 4% from gear listed in Precast set

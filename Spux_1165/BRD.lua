@@ -1,14 +1,17 @@
+--Spux
 local profile = {}
 
 local fastCastValue = 0.00 -- Only include Fast Cast e.g. Loquacious Earring, Rostrum Pumps
 local fastCastValueSong = 0.37 -- Only include Song Spellcasting Time e.g. Minstrel's Ring, Sha'ir Manteel
 
-local ninSJMaxMP = nil -- The Max MP you have when /nin in your idle set
-local whmSJMaxMP = 280 -- The Max MP you have when /whm in your idle set
+local whmSJMaxMP = 233 -- The Max MP you have when /whm in your idle set
 local rdmSJMaxMP = nil -- The Max MP you have when /rdm in your idle set
 local blmSJMaxMP = nil -- The Max MP you have when /blm in your idle set
 
-local displayheadOnAbility = true
+-- Comment out the equipment within these sets if you do not have them or do not wish to use them
+local warlocks_mantle = { -- Don't add 2% to fastCastValue for this as it is SJ dependant
+   -- Back = 'Warlock\'s Mantle',
+}
 
 local sets = {
     Idle = {
@@ -42,7 +45,7 @@ local sets = {
 		Back = 'Hexerei Cape',
 		Feet = 'Powder Boots',
     },
-    IdleMaxMP = {
+    IdleMaxMP = { -- Needs more Max MP
 		Main = 'Terra\'s Staff',
         Sub = '',
         Range = 'Traversiere +1',
@@ -166,23 +169,6 @@ local sets = {
         Feet = 'Root Sabots', --+35
 		--Total 301
 	
-	
-	
-     --[[   Main = 'Tutelary',
-        Sub = 'She-slime Shield',
-        Ammo = 'Happy Egg',
-        Head = 'Genbu\'s Kabuto',
-        Neck = 'Bird Whistle',
-        Ear1 = 'Pigeon Earring',
-        Ear2 = 'Loquac. Earring',
-        Body = 'Sha\'ir Manteel',
-        Hands = 'Seiryu\'s Kote',
-        Ring1 = 'Minstrel\'s Ring',
-        Ring2 = 'Bomb Queen Ring',
-        Back = 'Gigant Mantle',
-        Waist = 'Powerful Rope',
-        Legs = 'Dusk Trousers',
-        Feet = 'Rostrum Pumps',]]
     },
     Casting = { -- Default Casting Equipment when using Idle sets
         Main = 'Terra\'s Staff',
@@ -593,24 +579,11 @@ profile.HandleCommand = function(args)
 end
 
 profile.HandleDefault = function()
-    gcmage.DoDefault(ninSJMaxMP, whmSJMaxMP, blmSJMaxMP, rdmSJMaxMP, nil)
+     gcmage.DoDefault(nil, whmSJMaxMP, blmSJMaxMP, rdmSJMaxMP, nil)
 	gFunc.LockStyle(sets.Lockstyle)
     gFunc.EquipSet(gcinclude.BuildLockableSet(gData.GetEquipment()))
-	
-	
 end
 
--- profile.HandlePrecast = function()
---    local action = gData.GetAction()
---    if (action.Type == 'Bard Song') then
---        gFunc.ForceEquipSet('Precast_Songs_HPDown')
---        gFunc.EquipSet(sets.Precast_Songs)
---        local totalFastCast = 1 - (1 - fastCastValueSong) * (1 - fastCastValue)
---        gcmage.DoPrecast(totalFastCast)
---    else
---        gcmage.DoPrecast(fastCastValue)
---    end
---end 
 profile.HandlePrecast = function()
     local player = gData.GetPlayer()
     local action = gData.GetAction()
@@ -631,33 +604,11 @@ profile.HandlePrecast = function()
     end
 end
 
-
-
--- profile.HandleMidcast = function()
---    gcmage.DoMidcast(sets, ninSJMaxMP, whmSJMaxMP, blmSJMaxMP, rdmSJMaxMP, nil)
-	
---	local ElementalStaffTable = {
---    ['Fire'] = 'Fire Staff',
---    ['Earth'] = 'Terra\'s Staff',
---    ['Water'] = 'Water Staff',
---    ['Wind'] = 'Wind Staff',
---    ['Ice'] = 'Aquilo\'s Staff',
---    ['Thunder'] = 'Jupiter\'s Staff',
---    ['Light'] = 'Apollo\'s Staff',
---    ['Dark'] = 'Pluto\'s Staff'
---};
---	local EleThrenody = T{ 'Wind Threnody', 'Ice Threnody', 'Fire Threnody', 'Water Threnody', 'Earth Threnody', 'Lightning Threnody', 'Dark Threnody', 'Light Threnody', };
-
---    local action = gData.GetAction()
---    if (action.Type == 'Bard Song') then
---        gFunc.EquipSet(sets.Sing_Default)
-
 profile.HandleMidcast = function()
     gcmage.DoMidcast(sets, ninSJMaxMP, whmSJMaxMP, blmSJMaxMP, rdmSJMaxMP, nil)
 
     local action = gData.GetAction()
-	
-    if (action.Type == 'Bard Song') then
+	    if (action.Type == 'Bard Song') then
         gFunc.EquipSet(sets.Sing_Default)
 
         if string.match(action.Name, 'Threnody') then --

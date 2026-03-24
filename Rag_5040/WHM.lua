@@ -1,3 +1,4 @@
+-- Rag
 local profile = {}
 
 local fastCastValue = 0.00 -- 0% from gear listed in Precast set. Note: Do NOT include cure clogs / ruckes rung here.

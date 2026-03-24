@@ -1,3 +1,4 @@
+-- Rag
 local profile = {}
 
 local fastCastValue = 0.04 -- Only include Fast Cast e.g. Loquacious Earring, Rostrum Pumps
