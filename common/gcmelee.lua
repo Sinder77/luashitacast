@@ -118,26 +118,6 @@ function gcmelee.DoDefault(max_hp_in_idle_with_regen_gear_equipped)
 
     gcinclude.DoDefaultIdle()
 
-    if (not gcinclude.horizon_safe_mode) then
-        if (player.MainJob == 'PLD' or player.MainJob == 'NIN' or player.MainJob == 'DRK') then
-            if (player.SubJob == 'NIN' or player.MainJob == 'NIN') then
-                local function GetShadowCount()
-                    for buffId, shadowCount in pairs(utsuBuffs) do
-                        if (gData.GetBuffCount(buffId) > 0) then
-                            return shadowCount
-                        end
-                    end
-
-                    return 0
-                end
-                if (GetShadowCount() == 0) then
-                    gFunc.EquipSet('IdleDT')
-                    if (gcdisplay.IdleSet == 'Alternate') then gFunc.EquipSet('IdleALTDT') end
-                end
-            end
-        end
-    end
-
     if (player.Status == 'Idle') then
         if (player.HPP < 50) then
             if (MuscleBeltJobs:contains(player.MainJob)) then gFunc.EquipSet('muscle_belt') end
@@ -207,6 +187,26 @@ function gcmelee.DoDefault(max_hp_in_idle_with_regen_gear_equipped)
             end
         end
     end
+
+    if (not gcinclude.horizon_safe_mode) then
+        if (player.MainJob == 'PLD' or player.MainJob == 'NIN' or (player.MainJob == 'DRK' and gcdisplay.GetToggle('Hate'))) then
+            if (player.SubJob == 'NIN' or player.MainJob == 'NIN') then
+                local function GetShadowCount()
+                    for buffId, shadowCount in pairs(utsuBuffs) do
+                        if (gData.GetBuffCount(buffId) > 0) then
+                            return shadowCount
+                        end
+                    end
+
+                    return 0
+                end
+                if (GetShadowCount() == 0) then
+                    gFunc.EquipSet('IdleDT')
+                    if (gcdisplay.IdleSet == 'Alternate') then gFunc.EquipSet('IdleALTDT') end
+                end
+            end
+        end
+    end
 end
 
 function gcmelee.DoFenrirsEarring()
@@ -227,6 +227,46 @@ function gcmelee.DoDefaultOverride()
         gFunc.EquipSet('Weapon_Loadout_' .. WeaponOverrideTable[weapon_override])
     end
     gcinclude.DoDefaultOverride(true)
+end
+
+function gcmelee.DoPreshot(preshotSet, rangedSet, snapShotValue)
+    gFunc.EquipSet(gFunc.Combine(rangedSet, preshotSet))
+
+    if (not lag) then
+        local rangedString = rangedSet.Range
+        if (rangedString == nil or rangedString == 'displaced' or rangedString == 'empty' or rangedString == 'remove'or rangedString == '') then
+            rangedString = rangedSet.Ammo
+        end
+
+        if (rangedString ~= nil) then
+            local item = AshitaCore:GetResourceManager():GetItemByName(rangedString, 0)
+            if (item ~= nil) then
+                local delay = item.Delay
+
+                -- print(chat.header('Ashitacast'):append(chat.message('Delay is ' .. tostring(delay))))
+
+                local player = gData.GetPlayer()
+                if (player.MainJob == 'RNG' or player.SubJob == "RNG") then
+                    return
+                end
+
+                local shotTime = (delay * 1000) / 120
+
+                local shotDelay = ((shotTime * (1 - snapShotValue)) / 1000) - minimumBuffer
+                if (shotDelay >= packetDelay) then
+                    gFunc.SetMidDelay(shotDelay)
+                end
+            end
+        end
+    end
+end
+
+function gcmelee.DoMidshot(sets, rangedSet)
+    gFunc.EquipSet(rangedSet)
+
+    if (not lag) then
+        gcmelee.SetupInterimEquipSet(sets)
+    end
 end
 
 function gcmelee.DoPrecast(fastCastValue)
@@ -275,25 +315,36 @@ end
 
 function gcmelee.DoMidcast(sets)
     if (not lag) then
-        gcmelee.SetupInterimEquipSet(sets)
+        gcmelee.SetupInterimEquipSet(sets, false)
     end
     gFunc.EquipSet('Haste')
 end
 
-function gcmelee.SetupInterimEquipSet(sets)
+function gcmelee.SetupInterimEquipSet(sets, isRanged)
     local action = gData.GetAction()
-
-    gFunc.InterimEquipSet(sets.DT)
 
     if (SurvivalSpells:contains(action.Name)) then
         gFunc.InterimEquipSet(sets.SIRD)
+    else
+        local ignoreTP = {
+            Main = 'ignore',
+            Sub = 'ignore',
+            Range = 'ignore',
+            Ammo = 'ignore',
+        }
+        local dtTP = gFunc.Combine(sets.DT, ignoreTP)
+        gFunc.InterimEquipSet(dtTP)
     end
 
+    if (gcdisplay.IdleSet == 'DT') then gFunc.InterimEquipSet(sets.DT) end
     if (gcdisplay.IdleSet == 'MDT') then gFunc.InterimEquipSet(sets.MDT) end
     if (gcdisplay.IdleSet == 'FireRes') then gFunc.InterimEquipSet(sets.FireRes) end
     if (gcdisplay.IdleSet == 'IceRes') then gFunc.InterimEquipSet(sets.IceRes) end
     if (gcdisplay.IdleSet == 'LightningRes') then gFunc.InterimEquipSet(sets.LightningRes) end
     if (gcdisplay.IdleSet == 'EarthRes') then gFunc.InterimEquipSet(sets.EarthRes) end
+    if (gcdisplay.IdleSet == 'WindRes') then gFunc.InterimEquipSet(sets.WindRes) end
+    if (gcdisplay.IdleSet == 'WaterRes') then gFunc.InterimEquipSet(sets.WaterRes) end
+    if (gcdisplay.IdleSet == 'Evasion') then gFunc.InterimEquipSet(sets.Evasion) end
 end
 
 function gcmelee.DoWS()

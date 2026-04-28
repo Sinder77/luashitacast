@@ -524,3 +524,32 @@
 ### v2.1.5
 - NIN - Adds a /bat toggle for bat earrings if using horizon_safe_mode
 - SMN - Improves BP set granularity for some Horizon-specific gear and Garuda
+- THF - Rearranges bolt cycle so that default is "None"
+- Melee - Fixes Ranged attacks so that override sets on interim will not disrupt ranged attacks
+
+### v2.1.6
+- NIN - Adds Ninja Kyahan purely for movement
+- NIN - Adds Blue Cotehardie for /RDM /WHM /DRK /PLD
+
+### v2.1.7
+- NIN - Adds Koga Kyahan for WS
+
+### v2.1.8
+- PLD / NIN / DRK - Tinkers with priority of IdleDT / IdleAltDT sets so that these will equip with highest priority. DRK will only equip it if the /hate toggle is enabled
+- Fixes Poison etc. to use max enfeebling skill
+
+### v2.1.9
+- Mages - Uses staves for Elemental DOTs always unless BLM regardless of use_staves_for_elemental_debuffs
+- NIN - Adds Resentment Cape
+- NIN / THF - Adds Wind Ring
+
+### v2.1.10
+- SMN - Adds a set specifically for spirit perpetuation to allow skill maximisation while idle with spirits active
+- Adds a few items to lockable / sticky equipment list (Primarily HELM/Fishing) as well as logic to prevent unusable items that are on cooldown from sticking
+- Removes /warpme command to force people to actually do it correctly via /exec script and stop providing a bad example on how to accomplish this
+- MNK - Adds Shadow Mantle for Chakra
+- WHM/SMN - Adds Medicine / Conjurer's Earring set logic
+
+### v2.1.11
+- WHM - Fix Ruckes Rung swapping due to Regen set on TP modes on WHM
+- All Mages - Causes Hate toggle to not equip correct staves for Hate spells in lieu of just equipping whatever is defined in the Hate set

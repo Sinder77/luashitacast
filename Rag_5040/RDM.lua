@@ -8,7 +8,7 @@ local blmSJMaxMP = 680 -- The Max MP you have when /blm in your idle set
 local drkSJMaxMP = 604 -- The Max MP you have when /drk in your idle set
 
 -- Disabled on horizon_safe_mode
-local fencersRingForced = true
+local fencersRingForced = true -- Default /fring value
 local fencersRingMaxHP = 907
 
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
@@ -295,6 +295,7 @@ local sets = {
     },
 
     Hate = { -- Switches to this set when casting Sleep, Blind, Dispel, Bind, Flash and Cures on other players if /hate is toggled on
+        Main = 'Terra\'s Staff',
         Ammo = 'Phtm. Tathlum',
         Head = 'Rival Ribbon', -- 2
         Neck = 'Harmonia\'s Torque', -- 3
@@ -344,7 +345,7 @@ local sets = {
         Feet = 'Mahatma Pigaches',
     },
     Cheat_HPUp = {
-        Main = 'Apollo\'s Staff',
+        Main = 'Apollo\'s Staff', -- Technically unnecessary, will be equipped automatically anyway
         Sub = 'remove',
         Ammo = 'Happy Egg',
         Head = 'Rival Ribbon', -- 2
@@ -592,7 +593,7 @@ local sets = {
     TP_HighAcc = {
         Head = 'Optical Hat',
         Hands = 'Hydra Gloves',
-        -- Back = 'Commander\'s Cape',
+        Back = 'Gigant Mantle',
         Waist = 'Life Belt',
         Legs = 'Hydra Brais',
         Feet = 'Hydra Gaiters',

@@ -30,6 +30,25 @@ local sorcerers_tonban = {
     Legs = 'Src. Tonban +1',
 }
 
+-- Disabled on horizon_safe_mode
+local sorcerers_earring_hp_threshold = 360 -- HP at which Sorcerer's Earring set is equipped
+local sorcerers_earring = { -- 1440
+    Main = 'Terra\'s Staff',
+    Ammo = 'Hedgehog Bomb',
+    Head = 'Genie Tiara',
+    Neck = 'Pch. Collar',
+    Ear1 = 'Cassie Earring',
+    Ear1 = 'Sorcerer\'s Earring',
+    Body = 'Src. Coat +1',
+    Hands = 'Garden Bangles',
+    Ring1 = 'Bomb Queen Ring',
+    Ring2 = 'Sattva Ring',
+    Back = 'Gigant Mantle',
+    Waist = 'Ocean Sash',
+    Legs = 'Igqira Lappas',
+    Feet = 'Marine M Boots',
+}
+
 local sets = {
     Idle = {
         Main = 'Terra\'s Staff',

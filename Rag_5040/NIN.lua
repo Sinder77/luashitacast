@@ -84,6 +84,32 @@ local koga_hakama = {
 local koga_hakama_plus_one = {
     Legs = 'Kog. Hakama +1',
 }
+local koga_kyahan = {
+    -- Feet = 'Koga Kyahan',
+}
+local koga_kyahan_plus_one = {
+    Feet = 'Kog. Kyahan +1',
+}
+local ninja_kyahan = {
+    Feet = 'Ninja Kyahan',
+}
+local ninja_kyahan_plus_one = {
+    -- Feet = 'Nin. Kyahan +1',
+}
+local blue_cotehardie = {
+    -- Body = 'Blue Cotehardie',
+}
+local blue_cotehardie_plus_one = {
+    Body = 'Blue Cotehard. +1',
+}
+local resentment_cape = {
+    Back = 'Resentment Cape',
+}
+
+local windRingMaxHP = 0
+local wind_ring = {
+    -- Ring2 = 'Wind Ring',
+}
 local bat_earrings = { -- Disabled on horizon_safe_mode
     -- Ear1 = 'Bat Earring',
     -- Ear2 = 'Bat Earring',
@@ -192,6 +218,14 @@ sets.warlocks_mantle = warlocks_mantle
 sets.fenrirs_stone = fenrirs_stone
 sets.koga_hakama = koga_hakama
 sets.koga_hakama_plus_one = koga_hakama_plus_one
+sets.koga_kyahan = koga_kyahan
+sets.koga_kyahan_plus_one = koga_kyahan_plus_one
+sets.ninja_kyahan = ninja_kyahan
+sets.ninja_kyahan_plus_one = ninja_kyahan_plus_one
+sets.blue_cotehardie = blue_cotehardie
+sets.blue_cotehardie_plus_one = blue_cotehardie_plus_one
+sets.resentment_cape = resentment_cape
+sets.wind_ring = wind_ring
 sets.bat_earrings = bat_earrings
 profile.Sets = gcmelee.AppendSets(sets)
 
@@ -259,9 +293,11 @@ profile.HandleWeaponskill = function()
     local environment = gData.GetEnvironment()
     if (environment.Time < 6 or environment.Time >= 18) then
         gFunc.EquipSet('koga_tekko')
+        gFunc.EquipSet('koga_kyahan')
     end
     if (environment.Time < 7 or environment.Time >= 17) then
         gFunc.EquipSet('koga_tekko_plus_one')
+        gFunc.EquipSet('koga_kyahan_plus_one')
     end
 end
 
@@ -340,6 +376,15 @@ profile.HandleDefault = function()
 
     gcmelee.DoDefault(max_hp_in_idle_with_regen_gear_equipped)
 
+    if (player.SubJob == 'RDM' or player.SubJob == 'WHM' or player.SubJob == 'DRK' or player.SubJob == 'PLD') then
+        if (player.MP <= 40) then
+            gFunc.EquipSet('blue_cotehardie')
+        end
+        if (player.MP <= 50) then
+            gFunc.EquipSet('blue_cotehardie_plus_one')
+        end
+    end
+
     if (player.Status == 'Engaged') then
         if (player.HPP <= 75 and player.TP <= 1000) then
             gFunc.EquipSet('shinobi_ring')
@@ -354,6 +399,26 @@ profile.HandleDefault = function()
 
     gcmelee.DoDefaultOverride()
 
+    if (gcdisplay.IdleSet == 'MDT' and conquest:GetOutsideControl()) then
+        gFunc.EquipSet('resentment_cape')
+    end
+
+    if (player.IsMoving == true) then
+        if (gcdisplay.IdleSet == 'Normal'
+            or gcdisplay.IdleSet == 'Alternate'
+            or gcdisplay.IdleSet == 'DT'
+            or gcdisplay.IdleSet == 'Evasion'
+            or player.Status == 'Engaged'
+        ) then
+            if (environment.Time < 6 or environment.Time >= 18) then
+                gFunc.EquipSet('ninja_kyahan')
+            end
+            if (environment.Time < 7 or environment.Time >= 17) then
+                gFunc.EquipSet('ninja_kyahan_plus_one')
+            end
+        end
+    end
+
     if (gcdisplay.IdleSet == 'Evasion') then
         if (environment.Time < 6 or environment.Time >= 18) then
             gFunc.EquipSet('fenrirs_stone')
@@ -363,6 +428,10 @@ profile.HandleDefault = function()
         end
         if (environment.Time < 7 or environment.Time >= 17) then
             gFunc.EquipSet('koga_hakama_plus_one')
+        end
+
+        if (environment.DayElement == 'Wind' and player.HP <= windRingMaxHP) then
+            gFunc.EquipSet(sets.wind_ring)
         end
 
         if (gcdisplay.GetToggle('Bat')) then

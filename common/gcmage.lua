@@ -14,7 +14,7 @@ local blm_advanced = false
 -- Set to true if you have both Dark Earring and Abyssal earring to turn off Diabolos's Earring override for Dark Magic sets
 local dark_and_abyssal_earrings = true
 
--- Set to true if you wish to always use elemental staves or claustrum for Elemental DoTs.
+-- Set to true if you wish to always use elemental staves or claustrum for Elemental DoTs. This is only required for BLM.
 local use_staves_for_elemental_debuffs = false
 
 -- Set to 0 to 50 depending on the mp lost when using medicine ring or virology ring on IdleMaxMP set.
@@ -168,8 +168,8 @@ local NoMods = T{
 local ElementalDebuffs = T{ 'Burn','Rasp','Drown','Choke','Frost','Shock' }
 local EnfeebMNDSpells = T{ 'Paralyze','Slow','Paralyze II','Slow II' }
 local EnfeebMNDACCSpells = T{ 'Silence' }
-local EnfeebINTSpells = T{ 'Blind','Poison','Poison II','Poisonga','Blind II' }
-local EnfeebINTACCSpells = T{ 'Gravity','Bind','Dispel','Sleep','Sleep II','Sleepga','Sleepga II' }
+local EnfeebINTSpells = T{ 'Blind','Blind II' }
+local EnfeebINTACCSpells = T{ 'Gravity','Bind','Dispel','Sleep','Sleep II','Sleepga','Sleepga II','Poison','Poison II','Poisonga' }
 local HateSpells = T{ 'Sleep','Sleep II','Blind','Dispel','Bind' }
 local DiabolosPoleSpells = T{ 'Aspir','Drain' }
 local SurvivalSpells = T{ 'Utsusemi: Ichi','Utsusemi: Ni','Blink','Aquaveil','Stoneskin' }
@@ -432,12 +432,20 @@ function gcmage.DoDefault(sets, ninSJMMP, whmSJMMP, blmSJMMP, rdmSJMMP, drkSJMMP
         if (lastSummoningElement ~= '' and gData.GetPet()) then
             gFunc.EquipSet('Perpetuation')
 
+            local isSpirit = string.match(gData.GetPet().Name, 'Spirit')
+            if (isSpirit) then
+                gFunc.EquipSet('Perpetuation_Spirits')
+            end
+
             local staff = ElementalStaffTable[lastSummoningElement]
             if (sets.bahamuts_staff.Main) then
                 staff = 'bahamuts_staff'
             end
             if (claustrum.Main) then
                 staff = 'claustrum'
+            end
+            if (isSpirit and sets.bahamuts_staff.Main) then
+                staff = 'bahamuts_staff'
             end
             gFunc.EquipSet(staff)
 
@@ -511,9 +519,7 @@ function gcmage.DoDefaultOverride()
         restingMaxMP = false
     end
 
-    if (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
-        gFunc.EquipSet('Weapon_Loadout_' .. WeaponOverrideTable[weapon_override])
-    end
+    gcmage.EquipWeaponLoadout()
 end
 
 function gcmage.DoPrecast(sets, fastCastValue, cureCastMeritValue)
@@ -585,9 +591,7 @@ function gcmage.DoPrecast(sets, fastCastValue, cureCastMeritValue)
         gcmage.SetupMidcastDelay(sets, fastCastValue, cureCastMeritValue)
     end
 
-    if (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
-        gFunc.EquipSet('Weapon_Loadout_' .. WeaponOverrideTable[weapon_override])
-    end
+    gcmage.EquipWeaponLoadout()
 end
 
 function gcmage.SetupMidcastDelay(sets, fastCastValue, cureCastMeritValue)
@@ -742,9 +746,7 @@ function gcmage.DoMidcast(sets, ninSJMMP, whmSJMMP, blmSJMMP, rdmSJMMP, drkSJMMP
     end
 
     if (gcmage.ShouldSkipCast(maxMP, isNoModSpell)) then
-        if (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
-            gFunc.EquipSet('Weapon_Loadout_' .. WeaponOverrideTable[weapon_override])
-        end
+        gcmage.EquipWeaponLoadout()
         do return end
     end
 
@@ -786,8 +788,14 @@ function gcmage.DoMidcast(sets, ninSJMMP, whmSJMMP, blmSJMMP, rdmSJMMP, drkSJMMP
         end
     end
 
-    gcmage.EquipStaff()
+    if (gcdisplay.GetToggle('Hate') == false or CureSpells:contains(action.Name) or not HateSpells:contains(action.Name)) then
+        gcmage.EquipStaff()
+    end
+    gcmage.EquipWeaponLoadout()
+end
 
+function gcmage.EquipWeaponLoadout()
+    local player = gData.GetPlayer()
     if (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
         gFunc.EquipSet('Weapon_Loadout_' .. WeaponOverrideTable[weapon_override])
     end
@@ -1162,7 +1170,7 @@ function gcmage.EquipStaff()
     local player = gData.GetPlayer()
 
     if (action.Skill ~= 'Enhancing Magic' and not string.match(action.Name, 'Utsusemi')) then
-        if (use_staves_for_elemental_debuffs or not ElementalDebuffs:contains(action.Name)) then
+        if (use_staves_for_elemental_debuffs or not ElementalDebuffs:contains(action.Name) or player.MainJob ~= 'BLM') then
             local staff = ElementalStaffTable[action.Element]
             if (player.MainJob == 'SMN' or player.MainJob == 'BLM') then
                 if (claustrum.Main and action.Skill ~= 'Healing Magic') then

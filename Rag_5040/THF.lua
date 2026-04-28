@@ -5,6 +5,10 @@ local fastCastValue = 0.00 -- 0% from gear listed in Precast set
 local max_hp_in_idle_with_regen_gear_equipped = 0 -- You could set this to 0 if you do not wish to ever use regen gear
 
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
+local windRingMaxHP = 0
+local wind_ring = {
+    -- Ring2 = 'Wind Ring',
+}
 local evasion_master_casters_mitts = {
     -- Hands = 'Mst.Cst. Mitts',
 }
@@ -114,6 +118,14 @@ local sets = {
     Ranged = {},
     Ranged_INT = {},
 
+    None = { -- Default range / ammo equipment while idle
+        -- Range = 'displaced',
+        -- Ammo = 'Bomb Core',
+    },
+    None_RA = { -- Used for ranged attacks when None set is being used instead of the bolt sets defined below
+        -- Range = 'displaced',
+        -- Ammo = 'Pebble',
+    },
     Acid = {
         Ammo = 'Acid Bolt',
     },
@@ -149,6 +161,7 @@ Everything below can be ignored.
 gcmelee = gFunc.LoadFile('common\\gcmelee.lua')
 
 sets.evasion_master_casters_mitts = evasion_master_casters_mitts
+sets.wind_ring = wind_ring
 profile.Sets = gcmelee.AppendSets(sets)
 
 local ammo = T{'aacid','asleep','abloody','ablind','avenom'}
@@ -159,6 +172,7 @@ local AmmoTable1 = {
     [3] = 'Bloody',
     [4] = 'Blind',
     [5] = 'Venom',
+    [6] = 'None',
 }
 local AmmoTable2 = {
     ['acid'] = 1,
@@ -166,6 +180,7 @@ local AmmoTable2 = {
     ['bloody'] = 3,
     ['blind'] = 4,
     ['venom'] = 5,
+    ['none'] = 6,
 }
 
 local saOverride = 0
@@ -199,6 +214,16 @@ end
 
 profile.HandleItem = function()
     gcinclude.DoItem()
+end
+
+profile.getRangedSet = function()
+    local rangedSet = gFunc.Combine(sets.Preshot, sets.Ranged)
+
+    if (gcdisplay.GetCycle('Ammo') == 'Bloody') then
+        rangedSet = gFunc.Combine(rangedSet, sets.Ranged_INT)
+    end
+
+    return gFunc.Combine(rangedSet, sets[gcdisplay.GetCycle('Ammo')])
 end
 
 profile.HandlePreshot = function()
@@ -305,8 +330,15 @@ profile.HandleDefault = function()
 
     gcmelee.DoDefaultOverride()
 
-    if (conquest:GetOutsideControl() and gcdisplay.IdleSet == 'Evasion') then
-        gFunc.EquipSet('evasion_master_casters_mitts')
+    if (gcdisplay.IdleSet == 'Evasion') then
+        if (conquest:GetOutsideControl()) then
+            gFunc.EquipSet('evasion_master_casters_mitts')
+        end
+
+        local environment = gData.GetEnvironment()
+        if (environment.DayElement == 'Wind' and player.HP <= windRingMaxHP) then
+            gFunc.EquipSet(sets.wind_ring)
+        end
     end
 
     local sa = gData.GetBuffCount('Sneak Attack')
