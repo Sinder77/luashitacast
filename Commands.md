@@ -11,6 +11,8 @@
 /weapon /wl - toggles between using Weapon_Loadout sets.
               can be used to specify different weapon loadouts. e.g. virtue stones etc.
               there is no UI element for this.
+              an argument can be given to jump directly to the given weapon loadout.
+              e.g. /wl 3 will go directly to Weapon_Loadout_3
 
 [Idle Sets] (Changes your idle set to use these sets instead)
 /idle           - toggles between using 2 different idle sets
@@ -26,9 +28,13 @@
 /lightningres /lres /tres - toggles Lightning Resistance set on/off.
 
 /evasion /eva   - toggles Evasion set on/off.
+
+/override /or   - toggles Override set on/off.
                   you could also use this set for special sets
-                  such as a MNK Counter set, a DRK Zerg set, Virtue Stone sets etc.
-                  as it will simply override your default idle / TP gear.
+                  such as a MNK Counter set, a DRK Zerg set, Virtue Stone sets,
+                  HELM/Fishing/Crafting sets, as it will simply override your
+                  default idle / TP gear.
+                  Note that any unused resistance set or evasion set can be used similarly.
 
 [Special Commands]
 /lockset [number] - equips the given lockset and locks equipment
@@ -45,18 +51,20 @@
                using a key press!
                i.e. You could push this 4 times a second just to mimic exactly what
                LuAshitacast would do for you automatically.
+
+/gcdisplay - toggles the visibility of the UI component.
 ```
 
 ## Additional Commands for All Mage Jobs:
 ```
+/setmp [number] - sets the MP at which your idle sets will automatically transition
+                  to using your IdleMaxMP set.
+                  this will override any convenience values located in your .lua files.
+                  /addmp will still work as per normal in conjunction with this.
+                  type /setmp without a number to display the current value.
 /addmp [number] - adds a set amount of MP to decide usage of the IdleMaxMP set.
                   this can be used when eating food or for other +MP effects.
                   type /addmp without a number to display the current value.
-/setmp [number] - sets the mp at which your idle sets will automatically transition
-                  to using your IdleMaxMP set.
-                  this will override the values defined for /NIN /WHM /RDM /BLM as well.
-                  /addmp will still work as per normal in conjunction with this.
-                  type /setmp without a number to display the current value.
 /resetmp        - resets addmp and setmp values to 0
 
 [RDM / WHM / BLM]
@@ -67,6 +75,8 @@
 /tp             - cycles TP set between being Off or a LowAcc and HighAcc set.
                   Using TP modes will cause spells / songs to no longer use staves etc.
                   as your weapons etc. will be locked to retain TP.
+                  an argument can be given to jump directly to the given tp set.
+                  i.e. "/tp off", "/tp lowacc", or "/tp highacc"
 /tptoggle       - toggles between the last used TP set and Off.
 ```
 
@@ -75,6 +85,14 @@
 /tp /tpset /mode - toggles TP set between a LowAcc and HighAcc set.
                    this will be overwritten if you have a DT or resistance set etc. enabled.
                    this is disabled for PLD in favour of using Idle sets by default.
+/sethp [number] - sets the HP under which regen gear will be used.
+                  this will override the convenience value located in your .lua file.
+                  /addhp will still work as per normal in conjunction with this.
+                  type /sethp without a number to display the current value.
+/addhp [number] - adds a set amount of HP to the HP value under which regen gear will be used.
+                  this can be used when eating food or for other +HP effects.
+                  type /addhp without a number to display the current value.
+/resethp        - resets addhp and sethp values to 0
 ```
 
 ## Additional Commands for RDM:
@@ -175,8 +193,8 @@ Alternatively, use /ammo to cycle through them.
 ```
 /nuke  - toggles between 2 different elemental accuracy sets for Ninjutsu nuking.
 /staff - toggles between always switching to staff for spells or not.
-         This is typically used in conjunction with the /dps command to result in
-         staff tanking even while engaged.
+         This is typically used in conjunction with the /dps command and an
+         empty weapon loadout to result in staff tanking even while engaged.
 /sring - toggles usage of Shinobi Ring.
 /bat   - forces bat earring to equip if /evasion is already toggled on.
          this command is only available in horizon_safe_mode as this is already

@@ -1,23 +1,77 @@
 local profile = {}
 
+<<<<<<< HEAD
 local fastCastValue = 0.00 -- 0% from gear listed in Precast set
+=======
+local fastCastValue = 0.02 -- 0% from gear listed in Precast set
+local snapShotValue = 0.00 -- 0% from gear listed in Preshot set
+>>>>>>> upstream
 
-local max_hp_in_idle_with_regen_gear_equipped = 0 -- You could set this to 0 if you do not wish to ever use regen gear
+-- The following is provided as a convenient saved setting over using the /sethp command. HP will fluctuate with SJ and usage of the command for this is required.
+local max_hp_in_idle_with_regen_gear_equipped = 0 -- Set this to 0 if you do not wish to ever use regen gear.
 
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
 local gaudy_harness = {
-    -- Body = 'Gaudy Harness',
+    Body = 'Gaudy Harness',
 }
 
 local sets = {
-    Idle = {},
+    Idle = {
+        Head = 'Darksteel Cap +1',
+        Neck = 'Jeweled Collar',
+        Ear1 = 'Merman\'s Earring',
+        Ear2 = 'Merman\'s Earring',
+        Body = 'Dst. Harness +1',
+        Hands = 'Dst. Mittens +1',
+        Ring1 = 'Shadow Ring',
+        Ring2 = { Name = 'Sattva Ring', Priority = 60 },
+        Back = 'Shadow Mantle',
+        Waist = { Name = 'Powerful Rope', Priority = 70 },
+        Legs = 'Dst. Subligar +1',
+        Feet = 'Dst. Leggings +1',
+    },
     IdleALT = {},
-    Resting = {},
+    Resting = {
+        Neck = { Name = 'Pch. Collar', Priority = 70 },
+        Ear1 = 'Relaxing Earring',
+        Ear2 = 'Sanative Earring',
+        Body = 'Nomad\'s Tunica',
+        Hands = 'Shep. Bracers',
+        Legs = 'Mst. Trousers +1',
+        Feet = 'Nomad\'s Boots',
+    },
     Town = {},
     Movement = {},
+<<<<<<< HEAD
+=======
+    Movement_TP = {
+        Hands = { Name = 'Alkyoneus\'s Brc.', Priority = 60 },
+        Feet = { Name = 'Ogre Ledelsens +1', Priority = 50 },
+    },
+>>>>>>> upstream
 
-    DT = {},
-    MDT = {},
+    DT = {
+        Head = 'Darksteel Cap +1',
+        Body = 'Dst. Harness +1',
+        Hands = 'Dst. Mittens +1',
+        Ring1 = 'Jelly Ring',
+        Ring2 = { Name = 'Sattva Ring', Priority = 60 },
+        Back = 'Shadow Mantle',
+        Legs = 'Dst. Subligar +1',
+        Feet = 'Dst. Leggings +1',
+    },
+    MDT = {
+        Head = 'Coral Visor +1',
+        Neck = 'Jeweled Collar +1',
+        Ear1 = 'Merman\'s Earring',
+        Ear2 = 'Merman\'s Earring',
+        Body = 'Cor. Scale Mail +1',
+        Hands = 'Coral Fng. Gnt. +1',
+        Ring1 = 'Shadow Ring',
+        Ring2 = 'Merman\'s Ring',
+        Legs = 'Coral Cuisses +1',
+        Feet = 'Coral Greaves +1',
+    },
     FireRes = {},
     IceRes = {},
     LightningRes = {},
@@ -25,17 +79,174 @@ local sets = {
     WindRes = {},
     WaterRes = {},
     Evasion = {},
-
-    Precast = {},
-    SIRD = { -- Only used for Idle sets and not while Override sets are active
+    Override = { -- An additional override set explicitly to be used for sets such as crafting, HELM, fishing, or any other special sets such as DRK 2HR, MNK Counter etc. n.b. Any unused Resist or Evasion set can be used similarly.
+        Body = 'Field Tunica',
+        Hands = 'Field Gloves',
+        Legs = 'Field Hose',
+        Feet = 'Field Boots'
     },
-    Haste = { -- Used for Utsusemi cooldown
+
+    Precast = {
+        Ear1 = { Name = 'Loquac. Earring', Priority = 50 },
+    },
+    SIRD = { -- Override sets (Resistance / Evasion) take precedence if in use.
+        Head = 'Darksteel Cap +1',
+        Neck = 'Willpower Torque', -- 5
+        Ear1 = 'Merman\'s Earring',
+        Ear2 = { Name = 'Magnetic Earring', Priority = 50 }, -- 8
+        Body = 'Dst. Harness +1',
+        Hands = 'Dst. Mittens +1',
+        Ring1 = 'Shadow Ring',
+        Ring2 = { Name = 'Sattva Ring', Priority = 60 },
+        Back = 'Shadow Mantle',
+        Waist = { Name = 'Powerful Rope', Priority = 70 },
+        Legs = 'Dst. Subligar +1',
+        Feet = 'Mountain Gaiters', -- 5
+    },
+    Haste = {
+        Head = 'Panther Mask +1',
+        Ear1 = { Name = 'Loquac. Earring', Priority = 50 },
+        Hands = { Name = 'Dusk Gloves +1', Priority = 60 },
+        Ring2 = 'Blitz Ring',
+        Back = 'Shadow Mantle',
+        Waist = 'Sonic Belt',
+        Legs = 'Byakko\'s Haidate',
+        Feet = { Name = 'Dusk Ledelsens +1', Priority = 60 },
+    },
+
+    TP_LowAcc = {
+        Head = 'Panther Mask +1',
+        Neck = 'Temp. Torque',
+        Ear1 = 'Brutal Earring',
+        Ear2 = 'Assault Earring',
+        Body = 'Armada Hauberk',
+        Hands = { Name = 'Dusk Gloves +1', Priority = 60 },
+        Ring1 = 'Flame Ring',
+        Ring2 = 'Blitz Ring',
+        Back = 'Forager\'s Mantle',
+        Waist = 'Sonic Belt',
+        Legs = 'Byakko\'s Haidate',
+        Feet = { Name = 'Dusk Ledelsens +1', Priority = 60 },
+    },
+    TP_Aftermath = {},
+    TP_Mjollnir_Haste = {
+        Hands = 'Armada Mufflers',
+    },
+    TP_HighAcc = {
+        Head = 'Optical Hat',
+        Neck = 'Peacock Amulet',
+        Hands = 'Armada Mufflers',
+        Ring1 = { Name = 'Toreador\'s Ring', Priority = 60 },
+        Ring2 = { Name = 'Toreador\'s Ring', Priority = 60 },
+        Back = 'Settler\'s Cape',
+        Waist = 'Life Belt',
+        Feet = 'Armada Sollerets',
+    },
+    TP_NIN = { -- Equips iff using 1h weapon in Sub
+        Ear2 = 'Stealth Earring',
+    },
+
+    Weapon_Loadout_1 = {
+        Main = 'Martial Axe',
+        Sub = 'Maneater',
+        Ammo = { Name = 'Tiphia Sting', Priority = -20 },
+    },
+    Weapon_Loadout_2 = {
+        Main = 'Maneater',
+        Sub = 'Temperance Axe',
+        Ammo = 'Virtue Stone',
+    },
+    Weapon_Loadout_3 = {
+        Main = 'Maneater',
+        Sub = 'Tatami Shield',
+        Ammo = { Name = 'Tiphia Sting', Priority = -20 },
+    },
+
+    WS = {
+        Head = { Name = 'Hecatomb Cap +1', Priority = 60 },
+        Neck = 'Temp. Torque',
+        Ear1 = 'Brutal Earring',
+        Ear2 = 'Assault Earring',
+        Body = 'Armada Hauberk',
+        Hands = { Name = 'Hct. Mittens +1', Priority = 60 },
+        Ring1 = 'Flame Ring',
+        Ring2 = 'Triumph Ring',
+        Back = 'Forager\'s Mantle',
+        Waist = 'Warwolf Belt',
+        Legs = { Name = 'Hct. Subligar +1', Priority = 60 },
+        Feet = { Name = 'Hct. Leggings +1', Priority = 60 },
+    },
+    WS_HighAcc = {
+        Ring1 = { Name = 'Toreador\'s Ring', Priority = 60 },
+        Ring2 = { Name = 'Toreador\'s Ring', Priority = 60 },
+        Legs = 'Byakko\'s Haidate',
+    },
+    WS_Rampage = {
+        Legs = 'Byakko\'s Haidate',
+    },
+    WS_Decimation = {
+        Hands = 'Alkyoneus\'s Brc.',
+        Legs = { Name = 'Bst. Trousers +1', Priority = 60 },
+    },
+
+    Charm = {
+        Head = { Name = 'Monster Helm', Priority = 70 },
+        Neck = 'Temp. Torque',
+        Ear1 = 'Melody Earring +1',
+        Ear2 = 'Melody Earring +1',
+        Body = { Name = 'Monster Jackcoat +1', Priority = 60 },
+        Hands = { Name = 'Monster Gloves', Priority = 60 },
+        Ring1 = 'Heavens Ring',
+        Ring2 = 'Heavens Ring',
+        Back = 'Lyricist\'s Gonnelle ',
+        Waist = 'Ryl.Kgt. Belt',
+        Legs = { Name = 'Bst. Trousers +1', Priority = 60 },
+        Feet = { Name = 'Monster Gaiters', Priority = 60 },
+    },
+    Reward = {
+        Head = { Name = 'Bison Warbonnet', Priority = 50 },
+        Neck = 'Faith Torque',
+        Ear1 = 'Cmn. Earring',
+        Ear2 = 'Cmn. Earring',
+        Body = { Name = 'Kirin\'s Osode', Priority = 50 },
+        Hands = { Name = 'Ogre Gloves +1', Priority = 50 },
+        Ring1 = 'Aqua Ring',
+        Ring2 = 'Communion Ring',
+        Back = 'Ryl. Army Mantle',
+        Waist = 'Ryl.Kgt. Belt',
+        Legs = 'Magic Cuisses',
+        Feet = { Name = 'Monster Gaiters', Priority = 60 },
+    },
+    Reward_Status_1 = { -- Paralyze, Poison, Blind
+        Body = { Name = 'Monster Jackcoat +1', Priority = 60 },
+    },
+    Reward_Status_2 = { -- Weight, Slow, Silence
+        Body = { Name = 'Monster Jackcoat +1', Priority = 60 },
+    },
+    Ready_Physical = {
+        Head = { Name = 'Shep. Bonnet', Priority = 60 },
+        Body = 'Shep. Doublet',
+        Feet = 'Shep. Boots',
+    },
+    Ready_Magic = {
+        Head = { Name = 'Beast Helm +1', Priority = 60 },
+        Body = 'Shep. Doublet',
+        Feet = 'Shep. Boots',
+    },
+    Call_Beast = {
+        Hands = { Name = 'Monster Gloves', Priority = 60 },
+    },
+
+    Preshot = {}, -- This set is pointless until ToAU+ when Snapshot on equipment is available
+    Ranged = {
+        Ammo = 'Pebble',
     },
 
     LockSet1 = {},
     LockSet2 = {},
     LockSet3 = {},
 
+<<<<<<< HEAD
     TP_LowAcc = {},
     TP_Aftermath = {},
     TP_Mjollnir_Haste = {},
@@ -54,6 +265,22 @@ local sets = {
     Weapon_Loadout_1 = {},
     Weapon_Loadout_2 = {},
     Weapon_Loadout_3 = {},
+=======
+    VileElixir = {
+        Head = { Name = 'Genbu\'s Kabuto', Priority = 60 },
+        Neck = { Name = 'Shield Pendant', Priority = 20 },
+        Ear1 = { Name = 'Pigeon Earring +1', Priority = 60 },
+        Ear2 = { Name = 'Pigeon Earring +1', Priority = 60 },
+        Body = { Name = 'Ogre Jerkin +1', Priority = 60 },
+        Hands = { Name = 'Seiryu\'s Kote', Priority = 60 },
+        Ring1 = { Name = 'Bomb Queen Ring', Priority = 60 },
+        Ring2 = { Name = 'Bloodbead Ring', Priority = 40 },
+        Back = { Name = 'Gigant Mantle', Priority = 60 },
+        Waist = { Name = 'Powerful Rope', Priority = 60 },
+        Legs = { Name = 'Dusk Trousers +1', Priority = 60 },
+        Feet = { Name = 'Dusk Ledelsens +1', Priority = 60 },
+    },
+>>>>>>> upstream
 }
 
 profile.SetMacroBook = function()
@@ -109,6 +336,16 @@ profile.HandleAbility = function()
         gFunc.EquipSet(sets.Charm)
     elseif (action.Name == 'Reward') then
         gFunc.EquipSet(sets.Reward)
+
+        local hasStatus1 = gData.GetBuffCount('Paralyze') > 0 or gData.GetBuffCount('Poison') > 0 or gData.GetBuffCount('Blind') > 0
+        if (hasStatus1) then
+            gFunc.EquipSet(sets.Reward_Status_1)
+        end
+        local hasStatus2 = gData.GetBuffCount('Weight') > 0 or gData.GetBuffCount('Slow') > 0 or gData.GetBuffCount('Silence') > 0
+        if (hasStatus2) then
+            gFunc.EquipSet(sets.Reward_Status_2)
+        end
+
         if (player.MainJobSync >= 72) then
             gFunc.Equip('Ammo', 'Pet Food Zeta')
         elseif (player.MainJobSync >= 60) then
@@ -197,7 +434,7 @@ profile.OnLoad = function()
     gcinclude.SetAlias(pets)
     gcinclude.SetAlias(T{'nextpet'})
     gcdisplay.CreateCycle('Pet', PetTable1)
-    gcmelee.Load()
+    gcmelee.Load(3.00)
     profile.SetMacroBook()
 end
 

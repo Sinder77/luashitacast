@@ -1,3 +1,13 @@
+<<<<<<< HEAD
+=======
+-- The period of time prior to midcast (spell) completion upon which equipment will swap.
+-- 400 milliseconds is provided as a default conservative value which is typically sufficient worldwide but this value can be increased if your internet is completely and consistently shit.
+local minimumBuffer = 0.4
+
+-- Change this value to 0.4 if you do not use PacketFlow
+local packetDelay = 0.25
+
+>>>>>>> upstream
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
 local fenrirs_earring = { -- Not used for RNG at all
     --Ear2 = 'Fenrir\'s Earring',
@@ -15,10 +25,15 @@ local dream_ribbon = {
     --Head = 'Dream Ribbon',
 }
 
+<<<<<<< HEAD
 
 -- Set this to true to confirm that actually read the README.md and set up the equipment listed above correctly
 local i_can_read_and_follow_instructions_test = true
 
+=======
+-- Set this to true to confirm that you actually read the README.md and set up the equipment and settings listed above correctly
+local i_can_read_and_follow_instructions_test = false
+>>>>>>> upstream
 
 --[[
 --------------------------------
@@ -44,10 +59,10 @@ local TpVariantTable = {
 
 local tp_variant = 1
 
-local WeaponOverrideTable = {
-    [1] = '1',
-    [2] = '2',
-    [3] = '3',
+local WeaponOverrideIndexes = {
+    ['1'] = 1,
+    ['2'] = 2,
+    ['3'] = 3,
 }
 
 local weapon_override = 1
@@ -57,23 +72,46 @@ local lastIdleSetBeforeEngaged = ''
 local SurvivalSpells = T{ 'Utsusemi: Ichi','Utsusemi: Ni','Blink','Aquaveil','Stoneskin' }
 
 local AliasList = T{
-    'tpset','tp','mode','dps','lag','weapon','wl'
+    'tpset','tp','mode','dps','lag','weapon','wl','addhp','sethp','resethp',
 }
 
 local utsuBuffs = T{
     [66] = 1,
     [444] = 2,
     [445] = 3,
-    [446] = 4, 
+    [446] = 4,
 }
+
+local setHP = 0
+local addHP = 0
+
+local ver_loaded = nil
 
 function gcmelee.SetIsDPS(isDPSVal)
     isDPS = isDPSVal
 end
 
-function gcmelee.Load()
+function gcmelee.GetIsDPS()
+    return isDPS
+end
+
+function gcmelee.Load(version)
+    ver_loaded = version
     gcinclude.SetAlias(AliasList)
-    gcinclude.Load()
+    gcmelee.RetryLoad()
+end
+
+function gcmelee.RetryLoad()
+    local player = gData.GetPlayer()
+    if (player.MainJob ~= 'NON') then
+        gcinclude.Load(gcmelee.GetVer())
+
+        if (ver_loaded ~= gcmelee.GetVer()) then
+            print(chat.header('GCMelee'):append(chat.message('Version mismatch found. Read the README.md')))
+        end
+    else
+        gcmelee.RetryLoad:once(1)
+    end
 end
 
 function gcmelee.Unload()
@@ -94,11 +132,18 @@ function gcmelee.DoCommands(args)
         end
         gcinclude.Message('TP Set', TpVariantTable[tp_variant])
     elseif (args[1] == 'weapon' or args[1] == 'wl') then
-        weapon_override = weapon_override + 1
-        if (weapon_override > #WeaponOverrideTable) then
-            weapon_override = 1
+        if (args[2] ~= nil) then
+            local cycleIndex = WeaponOverrideIndexes[args[2]]
+            if (cycleIndex ~= nil) then
+                weapon_override = cycleIndex
+            end
+        else
+            weapon_override = weapon_override + 1
+            if (weapon_override > #WeaponOverrideIndexes) then
+                weapon_override = 1
+            end
         end
-        gcinclude.Message('Weapon Loadout', WeaponOverrideTable[weapon_override])
+        gcinclude.Message('Weapon Loadout', tostring(weapon_override))
     elseif (args[1] == 'dps') then
         isDPS = not isDPS
         gcinclude.Message('DPS Mode', isDPS)
@@ -109,6 +154,24 @@ function gcmelee.DoCommands(args)
     elseif (args[1] == 'lag') then
         lag = not lag
         gcinclude.Message('[Note: Midcast Delays are disabled if Lag is true] Lag', lag)
+    elseif (args[1] == 'addhp') then
+        if (tonumber(args[2]) ~= nil) then
+            addHP = tonumber(args[2])
+            gcinclude.Message('Add HP', args[2])
+        else
+            gcinclude.Message('Add HP', addHP)
+        end
+    elseif (args[1] == 'sethp') then
+        if (tonumber(args[2]) ~= nil) then
+            setHP = tonumber(args[2])
+            gcinclude.Message('Set HP', args[2])
+        else
+            gcinclude.Message('Set HP', setHP)
+        end
+    elseif (args[1] == 'resethp') then
+        setHP = 0
+        addHP = 0
+        print(chat.header('Ashitacast'):append(chat.message('Reset HP')))
     end
 end
 
@@ -122,8 +185,12 @@ function gcmelee.DoDefault(max_hp_in_idle_with_regen_gear_equipped)
         if (player.HPP < 50) then
             if (MuscleBeltJobs:contains(player.MainJob)) then gFunc.EquipSet('muscle_belt') end
         end
+<<<<<<< HEAD
 		
         if (player.HP < max_hp_in_idle_with_regen_gear_equipped) then
+=======
+        if (setHP > 0 and player.HP < setHP + addHP) or (setHP == 0 and player.HP < max_hp_in_idle_with_regen_gear_equipped + addHP) then
+>>>>>>> upstream
             local environment = gData.GetEnvironment()
             if (environment.Time >= 6 and environment.Time < 18) then
                 if (GardenBanglesJobs:contains(player.MainJob)) then gFunc.EquipSet('garden_bangles') end
@@ -176,6 +243,14 @@ function gcmelee.DoDefault(max_hp_in_idle_with_regen_gear_equipped)
                 end
                 if player.MainJob == 'DRK' and aftermath and mjollnirHaste then
                     gFunc.EquipSet('TP_Aftermath_Mjollnir_Haste')
+                elseif player.MainJob == 'DRG' then
+                    spiritSurge = gData.GetBuffCount('Spirit Surge') > 0
+                    if (spiritSurge) then
+                        gFunc.EquipSet('TP_2H_Haste')
+                        if (mjollnirHaste) then
+                            gFunc.EquipSet('TP_2H_Mjollnir_Haste')
+                        end
+                    end
                 end
                 if (gcdisplay.IdleSet == 'HighAcc') then
                     gFunc.EquipSet('TP_HighAcc')
@@ -224,7 +299,7 @@ end
 
 function gcmelee.DoDefaultOverride()
     if (isDPS) then
-        gFunc.EquipSet('Weapon_Loadout_' .. WeaponOverrideTable[weapon_override])
+        gFunc.EquipSet('Weapon_Loadout_' .. tostring(weapon_override))
     end
     gcinclude.DoDefaultOverride(true)
 end
@@ -247,6 +322,7 @@ function gcmelee.DoPreshot(preshotSet, rangedSet, snapShotValue)
 
                 local player = gData.GetPlayer()
                 if (player.MainJob == 'RNG' or player.SubJob == "RNG") then
+                    gFunc.SetMidDelay(0)
                     return
                 end
 
@@ -256,7 +332,15 @@ function gcmelee.DoPreshot(preshotSet, rangedSet, snapShotValue)
                 if (shotDelay >= packetDelay) then
                     gFunc.SetMidDelay(shotDelay)
                 end
+            else
+                print(chat.header('GCMelee'):append(chat.message('Ranged weapons not filled out correctly. Unable to calculate delay for interim set usage.')))
+                gFunc.SetMidDelay(0)
+                gFunc.SetMidDelay(shotDelay)
             end
+        else
+            print(chat.header('GCMelee'):append(chat.message('Ranged weapons not filled out correctly. Unable to calculate delay for interim set usage.')))
+            gFunc.SetMidDelay(0)
+            gFunc.SetMidDelay(shotDelay)
         end
     end
 end
@@ -306,6 +390,7 @@ function gcmelee.SetupMidcastDelay(fastCastValue)
     local castDelay = ((castTime * castTimeMod * (1 - fastCastValue)) / 1000) - minimumBuffer
     if (castDelay >= packetDelay) then
         gFunc.SetMidDelay(castDelay)
+        gcinclude.DoCancel(action, castDelay - minimumBuffer)
     end
 
     -- print(chat.header('DEBUG'):append(chat.message('Cast delay is ' .. castDelay)))
@@ -318,9 +403,14 @@ function gcmelee.DoMidcast(sets)
         gcmelee.SetupInterimEquipSet(sets, false)
     end
     gFunc.EquipSet('Haste')
+
+    if (isDPS) then
+        gFunc.EquipSet('Weapon_Loadout_' .. tostring(weapon_override))
+    end
 end
 
 function gcmelee.SetupInterimEquipSet(sets, isRanged)
+<<<<<<< HEAD
     local action = gData.GetAction()
 
     if (SurvivalSpells:contains(action.Name)) then
@@ -345,6 +435,40 @@ function gcmelee.SetupInterimEquipSet(sets, isRanged)
     if (gcdisplay.IdleSet == 'WindRes') then gFunc.InterimEquipSet(sets.WindRes) end
     if (gcdisplay.IdleSet == 'WaterRes') then gFunc.InterimEquipSet(sets.WaterRes) end
     if (gcdisplay.IdleSet == 'Evasion') then gFunc.InterimEquipSet(sets.Evasion) end
+=======
+    local interimSet = sets.SIRD
+
+    local action = gData.GetAction()
+    if (not SurvivalSpells:contains(action.Name)) then
+        interimSet = sets.DT
+    end
+
+    if (gcdisplay.IdleSet == 'DT') then interimSet = sets.DT end
+    if (gcdisplay.IdleSet == 'MDT') then interimSet = sets.MDT end
+    if (gcdisplay.IdleSet == 'FireRes') then interimSet = sets.FireRes end
+    if (gcdisplay.IdleSet == 'IceRes') then interimSet = sets.IceRes end
+    if (gcdisplay.IdleSet == 'LightningRes') then interimSet = sets.LightningRes end
+    if (gcdisplay.IdleSet == 'EarthRes') then interimSet = sets.EarthRes end
+    if (gcdisplay.IdleSet == 'WindRes') then interimSet = sets.WindRes end
+    if (gcdisplay.IdleSet == 'WaterRes') then interimSet = sets.WaterRes end
+    if (gcdisplay.IdleSet == 'Evasion') then interimSet = sets.Evasion end
+    if (gcdisplay.IdleSet == 'Override') then interimSet = sets.Override end
+
+    if (isDPS) then
+        local wlString = 'Weapon_Loadout_' .. tostring(weapon_override)
+        interimSet = gFunc.Combine(interimSet, sets[wlString])
+    end
+
+    if (isRanged) then
+        local ignoreRA = {
+            Range = 'ignore',
+            Ammo = 'ignore',
+        }
+        interimSet = gFunc.Combine(interimSet, ignoreRA)
+    end
+
+    gFunc.InterimEquipSet(interimSet)
+>>>>>>> upstream
 end
 
 function gcmelee.DoWS()
@@ -380,6 +504,10 @@ function gcmelee.AppendSets(sets)
     sets.dream_ribbon = dream_ribbon
 
     return gcinclude.AppendSets(sets)
+end
+
+function gcmelee.GetVer()
+    return 3.00
 end
 
 return gcmelee

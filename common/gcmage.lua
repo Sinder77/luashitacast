@@ -1,4 +1,4 @@
--- The period of time prior to midcast (spell) completion upon which equipment will swap. 
+-- The period of time prior to midcast (spell) completion upon which equipment will swap.
 -- 400 milliseconds is provided as a default conservative value which is typically sufficient worldwide but this value can be increased if your internet is completely and consistently shit.
 local minimumBuffer = 0.4
 
@@ -120,10 +120,15 @@ local tp_diabolos_earring = {
     -- Ear2 = 'Diabolos\'s Earring',
 }
 
+<<<<<<< HEAD
 
 -- Set this to true to confirm that actually read the README.md and set up the equipment listed above correctly
 local i_can_read_and_follow_instructions_test = true
 
+=======
+-- Set this to true to confirm that you actually read the README.md and set up the equipment and settings listed above correctly
+local i_can_read_and_follow_instructions_test = false
+>>>>>>> upstream
 
 --[[
 --------------------------------
@@ -172,7 +177,6 @@ local EnfeebINTSpells = T{ 'Blind','Blind II' }
 local EnfeebINTACCSpells = T{ 'Gravity','Bind','Dispel','Sleep','Sleep II','Sleepga','Sleepga II','Poison','Poison II','Poisonga' }
 local HateSpells = T{ 'Sleep','Sleep II','Blind','Dispel','Bind' }
 local DiabolosPoleSpells = T{ 'Aspir','Drain' }
-local SurvivalSpells = T{ 'Utsusemi: Ichi','Utsusemi: Ni','Blink','Aquaveil','Stoneskin' }
 local SpikeSpells = T{ 'Blaze Spikes','Shock Spikes','Ice Spikes' }
 local CureSpells = T{ 'Cure','Cure II','Cure III','Cure IV','Cure V','Curaga','Curaga II','Curaga III','Curaga IV' }
 
@@ -219,15 +223,18 @@ local restingMaxMP = false
 
 local lag = false
 
-local WeaponOverrideTable = {
-    [1] = '1',
-    [2] = '2',
-    [3] = '3',
+local WeaponOverrideIndexes = {
+    ['1'] = 1,
+    ['2'] = 2,
+    ['3'] = 3,
 }
 
 local weapon_override = 1
 
-function gcmage.Load()
+local ver_loaded = nil
+
+function gcmage.Load(version)
+    ver_loaded = version
     gcinclude.SetAlias(AliasList)
     gcmage.RetryLoad()
 end
@@ -236,7 +243,11 @@ function gcmage.RetryLoad()
     local player = gData.GetPlayer()
     if (player.MainJob ~= 'NON') then
         gcmage.SetVariables()
-        gcinclude.Load()
+        gcinclude.Load(gcmage.GetVer())
+
+        if (ver_loaded ~= gcmage.GetVer()) then
+            print(chat.header('GCMage'):append(chat.message('Version mismatch found. Read the README.md')))
+        end
     else
         gcmage.RetryLoad:once(1)
     end
@@ -326,11 +337,18 @@ function gcmage.DoCommands(args, sets)
         lag =  not lag
         gcinclude.Message('[Note: Midcast Delays are disabled if Lag is true] Lag', lag)
     elseif ((args[1] == 'weapon' or args[1] == 'wl') and player.MainJob ~= 'BLM') then
-        weapon_override = weapon_override + 1
-        if (weapon_override > #WeaponOverrideTable) then
-            weapon_override = 1
+        if (args[2] ~= nil) then
+            local cycleIndex = WeaponOverrideIndexes[args[2]]
+            if (cycleIndex ~= nil) then
+                weapon_override = cycleIndex
+            end
+        else
+            weapon_override = weapon_override + 1
+            if (weapon_override > #WeaponOverrideIndexes) then
+                weapon_override = 1
+            end
         end
-        gcinclude.Message('Weapon Loadout', WeaponOverrideTable[weapon_override])
+        gcinclude.Message('Weapon Loadout', tostring(weapon_override))
     end
 
     if (player.MainJob == 'RDM' or player.MainJob == 'WHM') then
@@ -480,7 +498,7 @@ function gcmage.DoDefault(sets, ninSJMMP, whmSJMMP, blmSJMMP, rdmSJMMP, drkSJMMP
             if (gcdisplay.GetCycle('TP') == 'HighAcc') then
                 gFunc.EquipSet('TP_HighAcc')
             end
-            if (player.SubJob == 'NIN') then
+            if (player.SubJob == 'NIN' and player.MainJob ~= 'SMN') then
                 local sub = gData.GetEquipment().Sub
                 if (sub ~= nil) then
                     if (sub.Resource.Slots == 3) then -- if this is a 1h weapon
@@ -577,7 +595,7 @@ function gcmage.DoPrecast(sets, fastCastValue, cureCastMeritValue)
 
             if (whmYellow) then
                 if (gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
-                    local weapon = sets['Weapon_Loadout_' .. WeaponOverrideTable[weapon_override]]
+                    local weapon = sets['Weapon_Loadout_' .. tostring(weapon_override)]
                     yellow = gFunc.Combine(yellow, weapon)
                 end
             end
@@ -626,6 +644,7 @@ function gcmage.SetupMidcastDelay(sets, fastCastValue, cureCastMeritValue)
     local castDelay = ((castTime * (1 - fastCastValue)) / 1000) - minimumBuffer
     if (castDelay >= packetDelay) then
         gFunc.SetMidDelay(castDelay)
+        gcinclude.DoCancel(action, castDelay - minimumBuffer)
     end
 
     local function delayCheat()
@@ -639,7 +658,7 @@ function gcmage.SetupMidcastDelay(sets, fastCastValue, cureCastMeritValue)
                     local hpUp = sets.Cheat_HPUp
 
                     if (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
-                        local weapon = sets['Weapon_Loadout_' .. WeaponOverrideTable[weapon_override]]
+                        local weapon = sets['Weapon_Loadout_' .. tostring(weapon_override)]
                         hpDownC3 = gFunc.Combine(hpDownC3, weapon)
                         hpDownC4 = gFunc.Combine(hpDownC4, weapon)
                         hpUp = gFunc.Combine(hpUp, weapon)
@@ -690,7 +709,7 @@ function gcmage.SetupMidcastDelay(sets, fastCastValue, cureCastMeritValue)
 
             if (whmYellow) then
                 if (gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
-                    local weapon = sets['Weapon_Loadout_' .. WeaponOverrideTable[weapon_override]]
+                    local weapon = sets['Weapon_Loadout_' .. tostring(weapon_override)]
                     yellow = gFunc.Combine(yellow, weapon)
                 end
             end
@@ -786,6 +805,12 @@ function gcmage.DoMidcast(sets, ninSJMMP, whmSJMMP, blmSJMMP, rdmSJMMP, drkSJMMP
         if (player.MainJob == 'WHM' and (string.match(action.Name, '.*na$') or (action.Name == 'Erase'))) then
             gFunc.EquipSet('virology_ring')
         end
+        if (action.Name == 'Aquaveil') then
+            gFunc.EquipSet('SIRD')
+            if (player.MainJob ~= 'BRD' and player.SubJob == 'NIN') then
+                 gFunc.EquipSet('SIRD_NIN')
+            end
+        end
     end
 
     if (gcdisplay.GetToggle('Hate') == false or CureSpells:contains(action.Name) or not HateSpells:contains(action.Name)) then
@@ -797,7 +822,7 @@ end
 function gcmage.EquipWeaponLoadout()
     local player = gData.GetPlayer()
     if (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
-        gFunc.EquipSet('Weapon_Loadout_' .. WeaponOverrideTable[weapon_override])
+        gFunc.EquipSet('Weapon_Loadout_' .. tostring(weapon_override))
     end
 end
 
@@ -878,6 +903,7 @@ function gcmage.DoPreshot(preshotSet, rangedSet, snapShotValue)
 
                 local player = gData.GetPlayer()
                 if (player.MainJob == 'RNG' or player.SubJob == "RNG") then
+                    gFunc.SetMidDelay(0)
                     return
                 end
 
@@ -887,7 +913,15 @@ function gcmage.DoPreshot(preshotSet, rangedSet, snapShotValue)
                 if (shotDelay >= packetDelay) then
                     gFunc.SetMidDelay(shotDelay)
                 end
+            else
+                print(chat.header('GCMage'):append(chat.message('Ranged weapons not filled out correctly. Unable to calculate delay for interim set usage.')))
+                gFunc.SetMidDelay(0)
+                gFunc.SetMidDelay(shotDelay)
             end
+        else
+            print(chat.header('GCMage'):append(chat.message('Ranged weapons not filled out correctly. Unable to calculate delay for interim set usage.')))
+            gFunc.SetMidDelay(0)
+            gFunc.SetMidDelay(shotDelay)
         end
     end
 end
@@ -905,15 +939,18 @@ function gcmage.SetupInterimEquipSet(sets, isRanged)
     local player = gData.GetPlayer()
     local action = gData.GetAction()
 
-    local interimSet = sets.Casting
+    local interimSet = sets.SIRD
+    if (player.MainJob ~= 'BRD' and player.SubJob == 'NIN') then
+        interimSet = gFunc.Combine(interimSet, sets.SIRD_NIN)
+    end
 
     if (gcdisplay.IdleSet == 'DT') then
-        if (environment.Time >= 6 and environment.Time < 18) then
-            interimSet = sets.DT
-        else
-            interimSet = sets.DTNight
+        interimSet = sets.DT
+        if (player.MainJob == 'RDM' and environment.Time < 6 and environment.Time >= 18) then
+            interimSet = gFunc.Combine(sets.DT, sets.DTNight)
         end
     end
+
     if (gcdisplay.IdleSet == 'MDT') then interimSet = sets.MDT end
     if (gcdisplay.IdleSet == 'FireRes') then interimSet = sets.FireRes end
     if (gcdisplay.IdleSet == 'IceRes') then interimSet = sets.IceRes end
@@ -922,13 +959,10 @@ function gcmage.SetupInterimEquipSet(sets, isRanged)
     if (gcdisplay.IdleSet == 'WindRes') then interimSet = sets.WindRes end
     if (gcdisplay.IdleSet == 'WaterRes') then interimSet = sets.WaterRes end
     if (gcdisplay.IdleSet == 'Evasion') then interimSet = sets.Evasion end
-
-    if (SurvivalSpells:contains(action.Name)) then
-        interimSet = sets.SIRD
-    end
+    if (gcdisplay.IdleSet == 'Override') then interimSet = sets.Override end
 
     if (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off' and (player.Status == 'Engaged' or player.TP > 0)) then
-        interimSet = gFunc.Combine(interimSet, sets['Weapon_Loadout_' .. WeaponOverrideTable[weapon_override]])
+        interimSet = gFunc.Combine(interimSet, sets['Weapon_Loadout_' .. tostring(weapon_override)])
     end
 
     if (isRanged) then
@@ -1019,13 +1053,14 @@ function gcmage.EquipElemental(maxMP, blmNukeExtra)
     if (gcdisplay.GetToggle('HNM') == true) then
         gFunc.EquipSet('NukeHNM')
     end
-    if (player.MainJob == 'BLM' and gcdisplay.GetToggle('Extra') and player.MP >= blmNukeExtra) then
-        gFunc.EquipSet('NukeExtra')
-    end
 
     if (ElementalDebuffs:contains(action.Name)) then
         gFunc.EquipSet('NukeDOT')
     else
+        if (player.MainJob == 'BLM' and gcdisplay.GetToggle('Extra') and player.MP >= blmNukeExtra) then
+            gFunc.EquipSet('NukeExtra')
+            do return end
+        end
         if (gcdisplay.GetCycle('Mode') == 'Accuracy') then
             gFunc.EquipSet('NukeACC')
             if ((player.MainJob == 'RDM') and conquest:GetOutsideControl()) then
@@ -1114,7 +1149,7 @@ function gcmage.EquipDark(maxMP)
     local action = gData.GetAction()
 
     gFunc.EquipSet('Dark')
-    if (player.MainJob == 'BLM' or player.MainJob == 'RDM') and (action.Name == 'Stun') then
+    if (action.Name == 'Stun') then
         gFunc.EquipSet('Stun')
         local chainspell = gData.GetBuffCount('Chainspell')
         if (chainspell > 0) then
@@ -1146,13 +1181,15 @@ end
 function gcmage.EquipDivine(maxMP)
     local action = gData.GetAction()
 
-    gFunc.EquipSet('Divine')
-    if (gcdisplay.GetToggle('Hate') == true) then
-        gFunc.EquipSet('Hate')
+    if (action.Name == 'Flash') then
+        gFunc.EquipSet('Support_Flash')
+        if (gcdisplay.GetToggle('Hate') == true) then
+            gFunc.EquipSet('Hate')
+            gFunc.EquipSet('Hate_Flash')
+        end
     end
 
     if (string.match(action.Name, 'Banish') or action.Name == 'Holy') then
-        gFunc.EquipSet('Divine')
         gFunc.EquipSet('Banish')
         if (action.MppAftercast < 51) then
             if (maxMP == 0 or action.MpAftercast < maxMP * 0.51) then
@@ -1178,7 +1215,7 @@ function gcmage.EquipStaff()
                 end
             end
             gFunc.EquipSet(staff)
-    
+
             if (player.MainJob == 'BLM' and DiabolosPoleSpells:contains(action.Name)) then
                 if (environment.WeatherElement == 'Dark') then
                     gFunc.EquipSet('diabolos_pole')
@@ -1255,6 +1292,10 @@ function gcmage.AppendSets(sets)
     sets.tp_diabolos_earring = tp_diabolos_earring
 
     return gcinclude.AppendSets(sets)
+end
+
+function gcmage.GetVer()
+    return 3.00
 end
 
 return gcmage

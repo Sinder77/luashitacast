@@ -334,7 +334,7 @@
 
 ### v1.5.0
 - Renames or moves some of the core common files: gcdisplayrag.lua, gcincluderag.lua, actionpacket.lua, changelog.
-- Shortens timers between forceEquips for Cure Cheats on RDM, PLD, and Yellow set equip on BLM. 
+- Shortens timers between forceEquips for Cure Cheats on RDM, PLD, and Yellow set equip on BLM.
 
 ### v1.5.1
 - BLM - Add MBHNM set for nuking with a choice of magic burst gear vs -enmity on HNMs.
@@ -483,7 +483,7 @@
 ### v2.0.17
 - SMN - Adds a BP_Healing set if -enmity desired for Healing Ruby etc.
 - WHM - Adds config options to enable correct usage of medicine ring when in max mp set.
-- BST, THF, WAR, Mages - Fixes TP_NIN set behaviour so that TP_NIN is only equipped if the offhand (Sub) is a 1h weapon. 
+- BST, THF, WAR, Mages - Fixes TP_NIN set behaviour so that TP_NIN is only equipped if the offhand (Sub) is a 1h weapon.
                        - In the case of WAR, removes DW entirely to automate this behaviour and renames the SAM set to TP_SAM for consistency.
 
 ### v2.0.18
@@ -553,3 +553,69 @@
 ### v2.1.11
 - WHM - Fix Ruckes Rung swapping due to Regen set on TP modes on WHM
 - All Mages - Causes Hate toggle to not equip correct staves for Hate spells in lieu of just equipping whatever is defined in the Hate set
+
+### v2.1.12
+- All Mages - Removes the fairly redundant / duplicated Casting set to just use SIRD for both purposes.
+- All Mages - Adds a SIRD_NIN set for dual Hermit's / Eremite's Wand usage while /NIN
+- BST - Adds Reward_Status sets for KO vs AF/Relic optimization
+- Adds a setting to default stylist to allowing blinks on self
+
+### v2.1.13
+- Adds an additional override side for the purposes of any special sets such as a MNK Counter set, a DRK Zerg set, Virtue Stone sets, HELM/Fishing/Crafting sets, as it will simply override your default idle / TP gear.
+- Note that any unused resistance set or evasion set can be used similarly and this functions identically.
+
+### v2.2.0
+- THF - Adds Cyclone and additional SA/TA WS handling
+- Mages - Equips SIRD set on Aquaveil casts instead of Haste / ConserveMP
+- SAM - Adds missing WS sets. Adds 2H WS set handling.
+- Mages - Fix DTNight to compose over DT
+- Melee - Fix interim sets to respect weapon loadouts
+- NIN - Add Cure 3 cheat sets
+- THF - Adds exclusion to Fight for auto-TH when /BST
+- NIN / PLD - Adds Stoneskin set
+- SAM - Adds a rudimentary Namas Arrow ammo prevention implementation if Yoichi is used with Amano
+- SAM - Rename Meditate and Warding Circle functionality
+- SAM - Add Jump sets
+- NIN - Tweaks some default base sets to use Hate. e.g. Cure
+- NIN - Add Drain and Aspir set
+- WAR - Adds WS sets
+- WAR - Adds rudimentary tracking for Raging Rush + Atilla's Earring when /SAM with Rajas
+- WAR - Adds Unicorn Legging handling
+- Conquest - Adds Temenos and Apollyon to beastman zones so OOR equipment works
+- Mages - Adds a stun set to every mage
+- BLM - Causes an early exit on NukeExtra for reliability. i.e. does not use Sorc Ring etc.
+- Adds support for debuff and opo-opo necklace gated by a boolean to prevent usage on servers that do not allow them
+- THF - Adds a set for Bully for god knows what reason. Potentially claiming with +enmity items.
+- NIN - Use conditional evasion gear on idle
+- MNK - Refactor equipment into JAs for clarity
+- NIN - Allow TP_Aftermath to re-apply to work with how weapon loadouts are intended to be used
+- MNK - Add a focus set modifier for hundred fists used if in LowAcc mode
+- WAR - Add Jump for /DRG
+- All Jobs - Moves resentment cape to gcinclude-rag.lua
+- All Mages - Removes redundant Divine sets
+- WHM - Adds Hate_Flash and Support_Flash as separate sets
+- PLD - Renames Hate_Flash to Flash as set naming does not indicate actual hierarchy
+- Melee - Add weapon loadout equip to midcast (primarily for PLD and capricorn staff)
+- Adds argument passing to /weapon and /wl commands
+- SMN - Fixes spirit usage for Horizon where the only thing that affects CD is BP usage
+
+### v3.0.0
+- Add /gcdisplay command to allow toggling of the visibility of the UI component
+- SMN - Shifts Horizon specific summoning magic cast time equipment into Precast_Summoning for clarity
+- Melee - Fixes tanking mode interim sets to ignore weapon loadouts
+- DRK - Adds relevant Haste sets for tanking
+- DRK - Adds relevant WS sets
+- All Jobs - Adds a fallback to set mid delay to 0 if ranged attack sets are unpopulated and prints an error message.
+- DRK - Fix priorities on enmity generation for tanking
+- DRG - Rename sets for consistency and to indicate inheritance
+- DRG - Add 2hr TP sets
+- RNG - Fixes fenrir's earring usage.
+- RNG - Re-organizes ranged accuracy / attack priorities to match the power / potency -> accuracy modifier paradigm used by all other jobs in these profiles.
+- RNG - Adds a HNM toggle
+- DRK / RNG - Adds Jump and High Jump sets
+- DRK / DRG - Adds DRG or THF SJ TP sets
+- Mages - Removes DTNight set except for RDM as this has no functional use.
+- Moves the UI element base variables to the top of the gcdisplay file for idiots that are unable to just locate it 10 lines down.
+- Melee - Adds /sethp and related commands to allow control over regen HP values without reloading profiles
+- DRG - Remove redundant breath set and rename BreathBonus to HealingBreath_SteadyWing_SpiritLink
+- DRG - Remove pointless super jump set

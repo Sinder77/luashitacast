@@ -1,12 +1,19 @@
-local horizon_safe_mode = true -- this disables some of the potentially more contentious automation to ensure LAC is not breaking Horizon server rules
+local horizon_safe_mode = true -- this disables some of the potentially more contentious automation to ensure this LAC profile is not breaking Horizon server rules
+local horizon_legal_mode = true -- this disables functionality that is illegal on horizon
 
-local display_messages = true -- set to true if you want chat log messages to appear on any /gc command used such as DT, or KITE gear toggles
+local display_messages = true -- Set to true if you want chat log messages to appear on any /gc command used such as DT, or kite gear toggles
 
-local load_stylist = true -- set to true to just load stylist on game start. this is purely for convenience since putting it in scripts doesn't work
+local load_stylist = true -- Set to true to just load stylist on game start.
 
-local toggleDisplayHeadOnAbility = true
+-- The following 2 settings force your character model to blink on every spell cast or ability usage for the purposes of animation cancelling.
+local setStylistToBlinkSelf = true -- Forces blinks on visible equipment changes.
+local toggleDisplayHeadOnAbility = true -- Forces blinks on JA usage.
 
 -- Comment out the equipment within these sets if you do not have them or do not wish to use them
+local resentment_cape = {
+    Back = 'Resentment Cape',
+}
+
 local kingdom_aketon = {
     -- Body = 'Kingdom Aketon',
 }
@@ -29,29 +36,39 @@ local skulkers_cape = {
     -- Back = 'Skulker\'s Cape',
 }
 
+<<<<<<< HEAD
 
 -- Set this to true to confirm that actually read the README.md and set up the equipment listed above correctly
 local i_can_read_and_follow_instructions_test = true
 
+=======
+-- Disabled on horizon_legal_mode
+local opo_opo_necklace = {
+    -- Neck = 'Opo-opo Necklace',
+}
+
+-- Set this to true to confirm that you actually read the README.md and set up the equipment and settings listed above correctly
+local i_can_read_and_follow_instructions_test = false
+>>>>>>> upstream
 
 -- Add additional equipment here that you want to automatically lock when equipping. Ignore's Maat's Cap, Dream Mittens +1, Dream Boots +1 as these will stick on idle.
 local LockableEquipment = {
     ['Main'] = T{'Warp Cudgel', 'Rep. Signet Staff', 'Kgd. Signet Staff', 'Fed. Signet Staff', 'Treat Staff II', 'Trick Staff II'},
     ['Sub'] = T{'Warp Cudgel'},
-    ['Range'] = T{'Lu Shang\'s F. Rod', 'Ebisu Fishing Rod'},
-    ['Ammo'] = T{'Fly Lure', 'Shrimp Lure', 'Sinking Minnow', 'Meatball'},
+    ['Range'] = T{},
+    ['Ammo'] = T{},
     ['Head'] = T{'Reraise Hairpin', 'Blink Band', 'Dream Hat +1', 'Tinfoil Hat'},
     ['Neck'] = T{'Opo-opo Necklace', 'Reraise Gorget'},
     ['Ear1'] = T{'Reraise Earring', 'Republic Earring', 'Kingdom Earring', 'Federation Earring'},
     ['Ear2'] = T{'Reraise Earring', 'Republic Earring', 'Kingdom Earring', 'Federation Earring'},
-    ['Body'] = T{'Custom Gilet +1', 'Custom Top +1', 'Magna Gilet +1', 'Magna Top +1', 'Savage Top +1', 'Elder Gilet +1', 'Wonder Maillot +1', 'Wonder Top +1', 'Mandra. Suit', 'Lord\'s Yukata', 'Field Tunica', 'Worker Tunica', 'Angler\'s Tunica', 'Fisherman\'s Apron'},
-    ['Hands'] = T{'Field Gloves', 'Worker Gloves', 'Angler\'s Gloves'},
+    ['Body'] = T{'Custom Gilet +1', 'Custom Top +1', 'Magna Gilet +1', 'Magna Top +1', 'Savage Top +1', 'Elder Gilet +1', 'Wonder Maillot +1', 'Wonder Top +1', 'Mandra. Suit', 'Lord\'s Yukata'},
+    ['Hands'] = T{},
     ['Ring1'] = T{'Anniversary Ring', 'Emperor Band', 'Chariot Band', 'Empress Band', 'Homing Ring', 'Return Ring', 'Warp Ring', 'Tavnazian Ring', 'Dem Ring', 'Holla Ring', 'Mea Ring', 'Altep Ring', 'Yhoat Ring', 'Albatross Ring'},
     ['Ring2'] = T{'Anniversary Ring', 'Emperor Band', 'Chariot Band', 'Empress Band', 'Homing Ring', 'Return Ring', 'Warp Ring', 'Tavnazian Ring', 'Dem Ring', 'Holla Ring', 'Mea Ring', 'Altep Ring', 'Yhoat Ring', 'Albatross Ring'},
     ['Back'] = T{},
     ['Waist'] = T{},
-    ['Legs'] = T{'Field Hose', 'Worker Hose', 'Angler\'s Hose'},
-    ['Feet'] = T{'Powder Boots', 'Field Boots', 'Worker Boots', 'Angler\'s Boots', 'Waders'}
+    ['Legs'] = T{},
+    ['Feet'] = T{'Powder Boots'}
 }
 
 --[[
@@ -66,8 +83,9 @@ conquest = gFunc.LoadFile('common\\conquest.lua')
 local gcinclude = {}
 
 gcinclude.horizon_safe_mode = horizon_safe_mode
+gcinclude.horizon_legal_mode = horizon_legal_mode
 
-local Overrides = T{ 'idle','dt','pdt','mdt','fireres','fres','iceres','ires','bres','lightningres','lres','tres','earthres','eres','sres','windres','wires','ares','waterres','wares','wres','evasion','eva' }
+local Overrides = T{ 'idle','dt','pdt','mdt','fireres','fres','iceres','ires','bres','lightningres','lres','tres','earthres','eres','sres','windres','wires','ares','waterres','wares','wres','evasion','eva','override','or' }
 local Commands = T{ 'kite','lock','lockset','horizonmode' }
 
 local Towns = T{
@@ -109,14 +127,22 @@ local OverrideNameTable = {
     ['wres'] = 'WaterRes',
     ['wares'] = 'WaterRes',
     ['evasion'] = 'Evasion',
-    ['eva'] = 'Evasion'
+    ['eva'] = 'Evasion',
+    ['or'] = 'Override',
+    ['override'] = 'Override'
 }
+
+local notResentmentCapeJobs = T{ 'WHM', 'BLM', 'SMN', 'SCH', 'PUP' }
 
 local isMageJobs = T{ 'RDM','BLM','WHM','SMN','BRD' }
 
 local lastIdleSet = 'Normal'
 
-function gcinclude.Load()
+local ver_loaded = nil
+
+function gcinclude.Load(version)
+    ver_loaded = version
+
     gSettings.AllowAddSet = true
     gcinclude.SetAlias(Overrides)
     gcinclude.SetAlias(Commands)
@@ -130,6 +156,13 @@ function gcinclude.Load()
         if (load_stylist) then
             AshitaCore:GetChatManager():QueueCommand(-1, '/load Stylist')
             AshitaCore:GetChatManager():QueueCommand(-1, '/stylist load default')
+            if (setStylistToBlinkSelf) then
+                AshitaCore:GetChatManager():QueueCommand(-1, '/stylist self off')
+            end
+        end
+
+        if (ver_loaded ~= gcinclude.GetVer()) then
+            print(chat.header('GCInclude'):append(chat.message('Version mismatch found. Read the README.md')))
         end
     end
 
@@ -138,6 +171,43 @@ function gcinclude.Load()
         delayLoad()
     else
         delayLoad:once(3)
+    end
+end
+
+function gcinclude.DoCancel(spell, delay)
+    if (not horizon_legal_mode) then
+        local index = spell.Resource.Index
+        local recast = AshitaCore:GetMemoryManager():GetRecast():GetSpellTimer(index)
+
+        if (recast == 0) then
+            if (spell.Name == 'Utsusemi: Ichi') then
+                local function delayUtsusemiCancel()
+                    if (gData.GetBuffCount(66) == 1) then
+                        AshitaCore:GetChatManager():QueueCommand(-1, '/cancel 66')
+                    elseif (gData.GetBuffCount(444) == 1) then
+                        AshitaCore:GetChatManager():QueueCommand(-1, '/cancel 444')
+                    end
+                end
+
+                delayUtsusemiCancel:once(delay)
+            elseif (spell.Name == 'Stoneskin') then
+                local function delayStoneskinCancel()
+                    if (gData.GetBuffCount('Stoneskin') == 1) then
+                        AshitaCore:GetChatManager():QueueCommand(-1, '/cancel Stoneskin')
+                    end
+                end
+
+                delayStoneskinCancel:once(delay)
+            elseif (spell.Name == 'Sneak') then
+                local function delaySneakCancel()
+                    if (gData.GetBuffCount('Sneak') == 1) then
+                        AshitaCore:GetChatManager():QueueCommand(-1, '/cancel Sneak')
+                    end
+                end
+
+                delaySneakCancel:once(delay - 0.4)
+            end
+        end
     end
 end
 
@@ -238,17 +308,15 @@ function gcinclude.DoDefaultOverride(isMelee)
     if (environment.Area ~= nil) and (Windy:contains(environment.Area)) then gFunc.EquipSet('federation_aketon') end
 
     if (gcdisplay.IdleSet == 'DT') then
-        if (isMelee) then
-            gFunc.EquipSet('DT')
-        else
-            if (environment.Time >= 6 and environment.Time < 18) then
-                gFunc.EquipSet('DT')
-            else
+        gFunc.EquipSet('DT')
+        if (not isMelee) then
+            if (environment.Time < 6 and environment.Time >= 18) then
                 gFunc.EquipSet('DTNight')
             end
         end
     end
     if (gcdisplay.IdleSet == 'Evasion') then gFunc.EquipSet('Evasion') end
+    if (gcdisplay.IdleSet == 'Override') then gFunc.EquipSet('Override') end
 
     if ((player.IsMoving == true)
         and (
@@ -256,6 +324,7 @@ function gcinclude.DoDefaultOverride(isMelee)
             or gcdisplay.IdleSet == 'Alternate'
             or gcdisplay.IdleSet == 'DT'
             or gcdisplay.IdleSet == 'Evasion'
+<<<<<<< HEAD
             or gcdisplay.IdleSet == 'LowAcc'
             or gcdisplay.IdleSet == 'HighAcc'
         )
@@ -266,11 +335,26 @@ function gcinclude.DoDefaultOverride(isMelee)
             else
                 gFunc.EquipSet('DTNight')
             end
+=======
+            or gcdisplay.IdleSet == 'Override'
+        ) then
+            gFunc.EquipSet('Movement')
+        end
+
+        if (player.Status == 'Engaged') then
+            gFunc.EquipSet('Movement')
+            gFunc.EquipSet('Movement_TP')
+>>>>>>> upstream
         end
         gFunc.EquipSet('Movement')
     end
 
-    if (gcdisplay.IdleSet == 'MDT') then gFunc.EquipSet('MDT') end
+    if (gcdisplay.IdleSet == 'MDT')
+        then gFunc.EquipSet('MDT')
+        if (conquest:GetOutsideControl() and not notResentmentCapeJobs:contains(player.MainJob)) then
+            gFunc.EquipSet('resentment_cape')
+        end
+    end
     if (gcdisplay.IdleSet == 'FireRes') then gFunc.EquipSet('FireRes') end
     if (gcdisplay.IdleSet == 'IceRes') then gFunc.EquipSet('IceRes') end
     if (gcdisplay.IdleSet == 'LightningRes') then gFunc.EquipSet('LightningRes') end
@@ -290,6 +374,12 @@ function gcinclude.DoDefaultOverride(isMelee)
     else
         restTimestampRecorded = false
     end
+
+    if (gData.GetBuffCount('Sleep') > 0 and not horizon_legal_mode) then
+        if (isMelee or (player.MainJob ~= 'BLM' and gcdisplay.GetCycle('TP') ~= 'Off')) then
+            gFunc.EquipSet('opo_opo_necklace')
+        end
+    end
 end
 
 function gcinclude.DoItem()
@@ -305,6 +395,11 @@ function gcinclude.DoItem()
     elseif (item.Name == 'Prism Powder') then
         gFunc.EquipSet('dream_mittens')
         gFunc.EquipSet('skulkers_cape')
+<<<<<<< HEAD
+=======
+    elseif (item.Name:startswith("Vile Elixir")) then
+        gFunc.EquipSet('VileElixir')
+>>>>>>> upstream
     end
 end
 
@@ -316,16 +411,16 @@ end
 
 local timePointer = ashita.memory.find('FFXiMain.dll', 0, '8B0D????????8B410C8B49108D04808D04808D04808D04C1C3', 2, 0)
 function gcinclude.GetTimeUTC()
-	local ptr = ashita.memory.read_uint32(timePointer)
-	ptr = ashita.memory.read_uint32(ptr)
-	return ashita.memory.read_uint32(ptr + 0x0C)
+    local ptr = ashita.memory.read_uint32(timePointer)
+    ptr = ashita.memory.read_uint32(ptr)
+    return ashita.memory.read_uint32(ptr + 0x0C)
 end
 
 local vanaOffset = 0x3C307D70
 function gcinclude.ItemEnchantmentIsReady(item)
-	local currentTime = gcinclude.GetTimeUTC()
-	local useTimeRemaining = (struct.unpack('L', item.Item.Extra, 5) + vanaOffset) - currentTime
-	return useTimeRemaining <= 0
+    local currentTime = gcinclude.GetTimeUTC()
+    local useTimeRemaining = (struct.unpack('L', item.Item.Extra, 5) + vanaOffset) - currentTime
+    return useTimeRemaining <= 0
 end
 
 function gcinclude.BuildLockableSet(equipment)
@@ -359,6 +454,7 @@ function gcinclude.BuildLockableSet(equipment)
 end
 
 function gcinclude.AppendSets(sets)
+    sets.resentment_cape = resentment_cape
     sets.kingdom_aketon = kingdom_aketon
     sets.republic_aketon = republic_aketon
     sets.federation_aketon = federation_aketon
@@ -366,8 +462,14 @@ function gcinclude.AppendSets(sets)
     sets.dream_boots = dream_boots
     sets.dream_mittens = dream_mittens
     sets.skulkers_cape = skulkers_cape
+    sets.opo_opo_necklace = opo_opo_necklace
 
     return sets
+end
+
+
+function gcinclude.GetVer()
+    return 3.00
 end
 
 return gcinclude

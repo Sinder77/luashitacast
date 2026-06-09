@@ -1,3 +1,7 @@
+local visibilityOnLoad = true -- Default visibility of the UI element on loading the game / switching jobs.
+local positionOnLoad_x = 300 -- Default X position of the UI element on loading the game / switching jobs.
+local positionOnLoad_y = 0 -- Default Y position of the UI element on loading the game / switching jobs.
+
 --[[
 --------------------------------
 Everything below can be ignored.
@@ -15,13 +19,13 @@ local gcdisplay = {
 }
 
 local fontSettings = {
-    visible = true,
+    visible = visibilityOnLoad,
     font_family = 'Consolas',
     font_height = 12,
     color = 0xFFFFFFFF,
     color_outline = 0xFF000000,
-    position_x = 300,
-    position_y = 0,
+    position_x = positionOnLoad_x,
+    position_y = positionOnLoad_y,
     draw_flags = 0x10,
     background =
     T{
@@ -98,6 +102,7 @@ function gcdisplay.Unload()
         gcdisplay.FontObject = nil
     end
     ashita.events.unregister('d3d_present', 'gcdisplay_present_cb')
+    ashita.events.unregister('command', 'gcdisplay_command_cb')
 end
 
 function gcdisplay.Load()
@@ -126,6 +131,19 @@ function gcdisplay.Load()
         end
         display = display .. '   ' .. 'IdleSet' .. ': ' .. '|cFF5FFF5F|' .. gcdisplay.IdleSet .. '|r' .. ' '
         gcdisplay.FontObject.text = display
+    end)
+
+    ashita.events.register('command', 'gcdisplay_command_cb', function (e)
+        local args = e.command:args()
+        if #args == 0 or args[1] ~= '/gcdisplay' then
+            return
+        end
+
+        e.blocked = true
+
+        if #args == 1 and gcdisplay.FontObject ~= nil then
+            gcdisplay.FontObject.visible = not gcdisplay.FontObject.visible
+        end
     end)
 end
 
