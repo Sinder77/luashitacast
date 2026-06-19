@@ -619,3 +619,15 @@
 - Melee - Adds /sethp and related commands to allow control over regen HP values without reloading profiles
 - DRG - Remove redundant breath set and rename BreathBonus to HealingBreath_SteadyWing_SpiritLink
 - DRG - Remove pointless super jump set
+
+## v3.0.1
+- BRD - Adds haste and recast gear to finale
+- All Jobs - Weapon Loadout cycling via /wl or /weapon with no argument was broken in 3.0.0 and probably 2.2.0. This fixes it and also makes it a visible UI element. The UI element is hidden when TP mode is Off for mages
+- RNG - Add ammo protection to Shadowbind
+
+## v3.0.2
+RNG - Fix Weapon Loadouts to be equipped on ranged attacks
+
+## v3.0.3
+SMN / DRG / BST - Implements a rudimentary delay for pet actions to allow for more defensive or offensive gearing while BPs / Breaths / Readies are executing
+SMN / BLM - Fixes claustrum to be used for hMP when resting for IdleMaxMP set

@@ -427,6 +427,12 @@ profile.HandleAbility = function()
         gFunc.EquipSet(sets.Scavenge)
     elseif (action.Name == 'Shadowbind') then
         gFunc.EquipSet(sets.Shadowbind)
+
+        local equipment = gData.GetEquipment()
+        if (equipment.Ammo ~= nil and equipment.Ammo.Name == special_ammo) then
+            print(chat.header('RNG'):append(chat.message('Action Canceled: Special Ammo Protection')))
+            gFunc.CancelAction()
+        end
     elseif (action.Name == 'Camouflage') then
         gFunc.EquipSet(sets.Camouflage)
     elseif (action.Name == 'Sharpshot') then
@@ -483,6 +489,8 @@ profile.HandleMidshot = function()
         gFunc.EquipSet(sets.Ranged_HNM)
 >>>>>>> upstream
     end
+
+    gFunc.EquipSet('Weapon_Loadout_' .. gcdisplay.GetCycle('Weapon Loadout'))
 
     local barrage = gData.GetBuffCount('Barrage')
     if (barrage == 1) then

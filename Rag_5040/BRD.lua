@@ -263,7 +263,6 @@ local sets = {
     ConserveMP = {
         Ammo = { Name = 'Dream Sand', Priority = 50 },
         Ear2 = { Name = 'Magnetic Earring', Priority = 50 },
-        Back = 'Maledictor\'s Shawl',
     },
 
     Sing_Default = { -- Defaulting to Wind and Debuffs just because we have to default to something
@@ -706,6 +705,8 @@ profile.HandleMidcast = function()
             end
         elseif (action.Name == 'Magic Finale') then
             gFunc.EquipSet(sets.Sing_Debuff)
+            gFunc.EquipSet(sets.Haste)
+            gFunc.EquipSet(sets.Sing_Recast)
             gFunc.EquipSet(sets.Sing_Finale)
         elseif string.match(action.Name, 'Requiem') then
             gFunc.EquipSet(sets.Sing_Debuff)

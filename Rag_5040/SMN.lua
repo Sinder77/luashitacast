@@ -2,6 +2,8 @@ local profile = {}
 
 local fastCastValue = 0.00 -- 4% from gear listed in Precast set not including carbuncles cuffs or evokers boots
 
+local petActionEquipmentDelay = 2.50 -- Approx. 3.25 to 3.5 seconds for a BP to be executed. Do not increase this value beyond ~2.90 to allow for packet delay and the 0.25 sec loop delay on HandleDefault execution.
+
 -- The following are provided as convenient saved settings over using the /setmp command. Not all SJs will be covered. e.g. DRG and usage of the command in these cases is required.
 local whmSJMaxMP = nil -- The Max MP you have when /whm in your idle set
 
@@ -285,7 +287,6 @@ local sets = {
     ConserveMP = {
         Ammo = { Name = 'Dream Sand', Priority = 50 },
         Ear2 = { Name = 'Magnetic Earring', Priority = 50 },
-        Back = 'Maledictor\'s Shawl',
     },
 
     Cure = {
@@ -532,10 +533,15 @@ local SmnCrit = T{'Predator Claws','Claw'}
 
 local nextConjurersRingCheck = 0
 
+local petActionDelay = 0
+
 profile.HandleAbility = function()
     gcmage.DoAbility()
 
-    gFunc.EquipSet('BP_Delay')
+    local action = gData.GetAction()
+    if (string.match(action.Type, 'Blood')) then
+        gFunc.EquipSet('BP_Delay')
+    end
 end
 
 profile.HandleItem = function()
@@ -591,7 +597,7 @@ profile.HandleDefault = function()
         isSpirit = string.match(gData.GetPet().Name, 'Spirit')
     end
 
-    if (petAction ~= nil) then
+    if (petAction ~= nil and os.clock() - petActionDelay > petActionEquipmentDelay) then
         gFunc.EquipSet('BP')
 
         -- Era provides near zero gear options so almost all of these just default to the default BP set or Magical
